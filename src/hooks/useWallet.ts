@@ -7,6 +7,7 @@ import {
   WalletType,
   useGetAccount,
   usePortkeyLock,
+  useComponentFlex,
 } from 'aelf-web-login';
 import { message } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -25,7 +26,6 @@ import { useSelector } from 'react-redux';
 import { useModal } from '@ebay/nice-modal-react';
 import TipsModal from 'pageComponents/profile/components/TipsModal';
 import { TipsMessage } from 'constants/seedDtail';
-import { did } from '@portkey/did-ui-react';
 import { ChainId } from '@portkey/types';
 import useDiscoverProvider from './useDiscoverProvider';
 import { MethodsWallet } from '@portkey/provider-types';
@@ -159,6 +159,8 @@ export const useWalletSyncCompleted = () => {
     loading.current = false;
     return '';
   };
+
+  const { did } = useComponentFlex();
 
   const getAccount = useCallback(async () => {
     try {
