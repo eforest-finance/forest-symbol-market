@@ -16,6 +16,8 @@ export default function MyAsset() {
 
   const info = useSelector((store) => store.elfInfo.elfInfo);
 
+  const { isShowRampBuy, isShowRampSell } = info;
+
   const { PortkeyAssetProvider, Asset } = useComponentFlex();
 
   useEffect(() => {
@@ -34,6 +36,9 @@ export default function MyAsset() {
         caHash={wallet?.portkeyInfo?.caInfo?.caHash}
         didStorageKeyName={'TSM'}>
         <Asset
+          isShowRamp={isShowRampBuy || isShowRampSell}
+          isShowRampBuy={isShowRampBuy}
+          isShowRampSell={isShowRampSell}
           // faucet={{
           //   faucetContractAddress: configInfo?.faucetContractAddress,
           // }}
