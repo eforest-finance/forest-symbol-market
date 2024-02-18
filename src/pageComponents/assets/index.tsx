@@ -33,8 +33,9 @@ export default function MyAsset() {
       <PortkeyAssetProvider
         originChainId={wallet?.portkeyInfo?.chainId as Chain}
         pin={wallet?.portkeyInfo?.pin}
-        caHash={wallet?.portkeyInfo?.caInfo?.caHash}
-        didStorageKeyName={'TSM'}>
+        // caHash={wallet?.portkeyInfo?.caInfo?.caHash}
+        // didStorageKeyName={'TSM'}
+      >
         <Asset
           isShowRamp={isShowRampBuy || isShowRampSell}
           isShowRampBuy={isShowRampBuy}
