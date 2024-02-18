@@ -1,4 +1,5 @@
 'use client';
+import { NetworkType } from '@portkey/did-ui-react';
 import dynamic from 'next/dynamic';
 
 import { store } from 'redux/store';
@@ -46,7 +47,7 @@ const WebLoginProviderDynamic = dynamic(
         },
       },
       portkeyV2: {
-        networkType: 'TESTNET',
+        networkType: (info?.networkTypeV2 || 'TESTNET') as NetworkType,
         useLocalStorage: true,
         graphQLUrl: info.graphqlServerV2,
         connectUrl: addBasePath(connectUrlV2 || ''),
