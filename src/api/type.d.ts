@@ -165,16 +165,6 @@ interface ISaveTokenInfosParams {
   file?: string;
 }
 
-interface INftTokenParams {
-  fromChainId?: string;
-  toChainId?: string;
-  symbol?: string;
-  nftSymbol?: string;
-  description?: string;
-  logoImageFile?: any;
-  featuredImageFile?: any;
-}
-
 interface ICreateSeedParams {
   chainId: string;
   seed: string;
