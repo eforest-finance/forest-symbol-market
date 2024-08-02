@@ -9,7 +9,7 @@ import { useRequest } from 'ahooks';
 const AElf = require('aelf-sdk');
 
 export const useGetToken = () => {
-  const { loginState, wallet, getSignature, walletType } = useWebLogin();
+  const { loginState, wallet, getSignature, walletType, version } = useWebLogin();
 
   const { runAsync } = useRequest(fetchToken, {
     retryCount: 3,
@@ -70,6 +70,7 @@ export const useGetToken = () => {
       scope: 'NFTMarketServer',
       client_id: 'NFTMarketServer_App',
       timestamp,
+      version: version === 'v1' ? 'v1' : 'v2',
       signature: sign.signature,
       ...extraParam,
     } as ITokenParams);

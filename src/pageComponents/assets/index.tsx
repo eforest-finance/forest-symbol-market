@@ -1,9 +1,8 @@
 'use client';
 
-import { Asset, PortkeyAssetProvider } from '@portkey/did-ui-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { WalletType, useWebLogin } from 'aelf-web-login';
+import { WalletType, useWebLogin, useComponentFlex } from 'aelf-web-login';
 import { LeftOutlined } from '@ant-design/icons';
 
 import styles from './style.module.css';
@@ -16,6 +15,10 @@ export default function MyAsset() {
   const { isLogin } = useWalletService();
 
   const info = useSelector((store) => store.elfInfo.elfInfo);
+
+  const { isShowRampBuy, isShowRampSell } = info;
+
+  const { PortkeyAssetProvider, Asset } = useComponentFlex();
 
   useEffect(() => {
     if (!isLogin) {
@@ -30,9 +33,13 @@ export default function MyAsset() {
       <PortkeyAssetProvider
         originChainId={wallet?.portkeyInfo?.chainId as Chain}
         pin={wallet?.portkeyInfo?.pin}
-        caHash={wallet?.portkeyInfo?.caInfo?.caHash}
-        didStorageKeyName={'TSM'}>
+        // caHash={wallet?.portkeyInfo?.caInfo?.caHash}
+        // didStorageKeyName={'TSM'}
+      >
         <Asset
+          isShowRamp={isShowRampBuy || isShowRampSell}
+          isShowRampBuy={isShowRampBuy}
+          isShowRampSell={isShowRampSell}
           // faucet={{
           //   faucetContractAddress: configInfo?.faucetContractAddress,
           // }}
