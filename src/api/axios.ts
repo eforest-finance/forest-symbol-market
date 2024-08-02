@@ -12,6 +12,7 @@ interface ResponseType<T> {
 const publicRuntimeConfig = {
   basePath: '/symbolmarket',
 };
+console.log('  ');
 
 class Request {
   instance: AxiosInstance;
