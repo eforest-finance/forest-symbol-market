@@ -27,6 +27,11 @@ interface ICreateTokenParams extends Omit<ICreateParams, 'externalInfo'> {
   issueChain?: string;
   issuer?: string;
   issueChainId?: string | number;
+  externalInfo: {
+    value: {
+      __ft_image_uri: string;
+    };
+  };
 }
 
 interface IIssuerParams {
