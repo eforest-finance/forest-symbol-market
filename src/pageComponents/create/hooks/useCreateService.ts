@@ -269,7 +269,14 @@ export function useCreateService() {
   const create = async (params: ICreateTokenParams, tokenLogoImage: string): Promise<Boolean | FailStepEnum> => {
     const info = store.getState().elfInfo.elfInfo;
 
-    const result = await createContract(params);
+    const result = await createContract({
+      ...params,
+      externalInfo: {
+        value: {
+          __ft_image_uri: tokenLogoImage,
+        },
+      },
+    });
     createResult.current = result;
 
     const issueChainId = params.issueChain;
