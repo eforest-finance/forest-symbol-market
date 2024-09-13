@@ -11,16 +11,22 @@ interface ISeedTitleProps {
   owner?: string;
   status?: number;
 }
+const { NEXT_PUBLIC_APP_ENV } = process.env;
 
 function OwnerDescription({ owner, chainId }: Pick<ISeedTitleProps, 'owner' | 'chainId'>) {
   const info = useSelector((store: any) => store.elfInfo.elfInfo);
   if (!owner) return null;
   const fullAddress = `ELF_${owner}_${chainId || (info.curChain as Chain)}`;
+  const explorerURL = {
+    test: 'https://testnet.aelfscan.io',
+    production: 'https://www.aelfscan.io',
+  };
+  const url = explorerURL[NEXT_PUBLIC_APP_ENV];
   const jumpBrowser = () => {
     if (chainId === 'AELF') {
-      window.open(`${info.MainExplorerURL}/address/${fullAddress}`);
+      window.open(`${url}/${info.curChain}/address/${fullAddress}`);
     } else {
-      window.open(`${info.SideExplorerURL}/address/${fullAddress}`);
+      window.open(`${url}/${info.curChain}/address/${fullAddress}`);
     }
   };
   return (

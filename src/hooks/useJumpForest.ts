@@ -6,6 +6,7 @@ export const useJumpForest = () => {
   const info = store.getState().elfInfo.elfInfo;
   const jumpForest = useCallback(
     (path?: string) => {
+      console.log('isPortkeyApp', isPortkeyApp(), info);
       if (isPortkeyApp()) {
         window.location.href = `${info.forestTerminalUrl}${path || ''}`;
       } else {
