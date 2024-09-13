@@ -13,6 +13,7 @@ import { SupportedELFChainId } from 'types';
 import { Popover, Space } from 'antd';
 import elfIcon from 'components/ELFLogo';
 import { ReactComponent as DownArrow } from 'assets/images/down-arrow-thin.svg';
+import { explorerURL } from 'utils/getExplorerUrl';
 
 const avatar = '/symbolmarket/images/avatar.png';
 
@@ -44,7 +45,7 @@ function ELFAddress({
         <span
           className="cursor-pointer text-sm flex-1 max-w-[264px] text-white font-medium break-all hover:text-primary-color-hover transition-all"
           onClick={() => {
-            window.open(`${host}/address/${address}`);
+            window.open(`${host}/${chain}/address/${address}`);
           }}>
           {address}
         </span>
@@ -120,13 +121,17 @@ function Personal() {
           content={
             <div className="bg-dark-bgc">
               <ELFAddress
-                host={info.MainExplorerURL}
+                host={explorerURL[process.env.NEXT_PUBLIC_APP_ENV || '']}
                 chain="AELF"
                 address={addPrefixSuffix(MainChainAddress || '', 'AELF')}
                 loading={loadingMainAddress}
               />
               <div className="h-[1px] bg-dark-border-default my-4 -mx-4"></div>
-              <ELFAddress host={info.SideExplorerURL} chain={info.curChain} address={userInfo.fullAddress} />
+              <ELFAddress
+                host={explorerURL[process.env.NEXT_PUBLIC_APP_ENV || '']}
+                chain={info.curChain}
+                address={userInfo.fullAddress}
+              />
             </div>
           }
           title={null}

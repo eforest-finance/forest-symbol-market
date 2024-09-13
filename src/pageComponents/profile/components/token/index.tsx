@@ -16,6 +16,8 @@ import { useUnmount } from 'react-use';
 import { addPrefixSuffix } from 'utils/addressFormatting';
 import { WebLoginState, useWebLogin } from 'aelf-web-login';
 import { SupportedELFChainId } from 'types';
+import { explorerURL } from 'utils/getExplorerUrl';
+import { chain } from 'lodash-es';
 
 export default function Token() {
   const TokeModal = useModal(IssueTokenModal);
@@ -128,11 +130,7 @@ export default function Token() {
   }, [tableProps.dataSource, showModal]);
 
   const navigateToPage = (record: IMyTokenInfo) => {
-    window.open(
-      `${
-        record.originIssueChain === SupportedELFChainId.MAIN_NET ? info.MainExplorerURL : info.SideExplorerURL
-      }/token/${record.symbol}`,
-    );
+    window.open(`${explorerURL[process.env.NEXT_PUBLIC_APP_ENV || '']}/${info.curChain}/token/${record.symbol}`);
   };
 
   const columns = getColumns({ isMobile: false, issueToken, navigateToPage });
