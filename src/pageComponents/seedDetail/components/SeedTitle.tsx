@@ -1,8 +1,8 @@
 import Copy from 'components/Copy';
-import { SEED_STATUS, SEED_TYPE } from 'constants/seedDtail';
 import { useSelector } from 'react-redux';
 import { OmittedType, getOmittedStr } from 'utils/addressFormatting';
 import { getStatusTileOrDesc } from './SeedStatus';
+import { explorerURL } from 'utils/getExplorerUrl';
 //import
 
 interface ISeedTitleProps {
@@ -17,11 +17,8 @@ function OwnerDescription({ owner, chainId }: Pick<ISeedTitleProps, 'owner' | 'c
   const info = useSelector((store: any) => store.elfInfo.elfInfo);
   if (!owner) return null;
   const fullAddress = `ELF_${owner}_${chainId || (info.curChain as Chain)}`;
-  const explorerURL = {
-    test: 'https://testnet.aelfscan.io',
-    production: 'https://www.aelfscan.io',
-  };
-  const url = explorerURL[NEXT_PUBLIC_APP_ENV];
+
+  const url = explorerURL[NEXT_PUBLIC_APP_ENV || 'AELF'];
   const jumpBrowser = () => {
     if (chainId === 'AELF') {
       window.open(`${url}/${info.curChain}/address/${fullAddress}`);
