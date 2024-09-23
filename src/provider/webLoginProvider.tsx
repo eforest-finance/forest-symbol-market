@@ -51,6 +51,10 @@ const WebLoginProviderDynamic = dynamic(
         useLocalStorage: true,
         graphQLUrl: info.graphqlServerV2,
         connectUrl: addBasePath(connectUrlV2 || ''),
+        referralInfo: {
+          referralCode: '',
+          projectCode: '13019',
+        },
         requestDefaults: {
           timeout: info.networkType === 'TESTNET' ? 300000 : 80000,
           baseURL: addBasePath(serverV2 || ''),
@@ -83,7 +87,7 @@ const WebLoginProviderDynamic = dynamic(
   { ssr: false },
 );
 
-export default ({ children }: { children: React.ReactNode }) => {
+const defaultWebLoginProvider = ({ children }: { children: React.ReactNode }) => {
   const info = store.getState().elfInfo.elfInfo;
   return (
     <PortkeyProviderDynamic networkType={info?.networkType} networkTypeV2={info?.networkTypeV2}>
@@ -113,3 +117,4 @@ export default ({ children }: { children: React.ReactNode }) => {
     </PortkeyProviderDynamic>
   );
 };
+export default defaultWebLoginProvider;
