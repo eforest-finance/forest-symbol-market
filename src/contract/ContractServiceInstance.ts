@@ -1,27 +1,25 @@
-import { CallContractParams } from 'aelf-web-login';
-import { WebLoginInterface } from 'aelf-web-login/dist/types/context';
 import { SupportedELFChainId } from 'constants/chain';
+
+import { useConnectWallet } from '@aelf-web-login/wallet-adapter-react';
+import { WalletTypeEnum } from '@aelf-web-login/wallet-adapter-base';
+import { ICallContractParams } from '@aelf-web-login/wallet-adapter-base';
 
 export interface IWebLoginArgs {
   address: string;
   chainId: string;
 }
 
-type MethodType = <T, R>(params: CallContractParams<T>) => Promise<R>;
+type MethodType = <T, R>(params: ICallContractParams<T>) => Promise<R>;
 
 export default class WebLoginInstance {
   public contract: any;
   public address: string | undefined;
   public chainId: string | undefined;
+  private sendMethod?: MethodType = undefined;
+  private viewMethod?: MethodType = undefined;
 
   private static instance: WebLoginInstance | null = null;
-  private context: WebLoginInterface | null = null;
-  private aelfSendMethod?: MethodType = undefined;
-  private aelfViewMethod?: MethodType = undefined;
-  private tdvvSendMethod?: MethodType = undefined;
-  private tdvvViewMethod?: MethodType = undefined;
-  private tdvwSendMethod?: MethodType = undefined;
-  private tdvwViewMethod?: MethodType = undefined;
+  private context: any = null;
 
   constructor(options?: IWebLoginArgs) {
     this.address = options?.address;
@@ -39,23 +37,8 @@ export default class WebLoginInstance {
   }
 
   setMethod({ chain, sendMethod, viewMethod }: { chain: Chain; sendMethod: MethodType; viewMethod: MethodType }) {
-    switch (chain) {
-      case SupportedELFChainId.MAIN_NET: {
-        this.aelfSendMethod = sendMethod;
-        this.aelfViewMethod = viewMethod;
-        break;
-      }
-      case SupportedELFChainId.TDVV_NET: {
-        this.tdvvSendMethod = sendMethod;
-        this.tdvvViewMethod = viewMethod;
-        break;
-      }
-      case SupportedELFChainId.TDVW_NET: {
-        this.tdvwSendMethod = sendMethod;
-        this.tdvwViewMethod = viewMethod;
-        break;
-      }
-    }
+    this.sendMethod = sendMethod;
+    this.viewMethod = viewMethod;
   }
 
   setContractMethod(
@@ -74,31 +57,23 @@ export default class WebLoginInstance {
     return this.context; // wallet, login, loginState
   }
 
-  contractSendMethod<T, R>(chain: Chain, params: CallContractParams<T>): Promise<R> {
-    switch (chain) {
-      case SupportedELFChainId.MAIN_NET:
-        return this.aelfSendMethod!(params);
-      case SupportedELFChainId.TDVV_NET:
-        return this.tdvvSendMethod!(params);
-      case SupportedELFChainId.TDVW_NET:
-        return this.tdvwSendMethod!(params);
+  contractSendMethod<T, R>(chain: Chain, params: ICallContractParams<T>): Promise<R> {
+    const contractMethod = this.sendMethod;
+    if (!contractMethod) {
+      throw new Error('Error: Invalid chain ID');
     }
-    throw new Error('Error: Invalid chainId');
+    return contractMethod(params);
   }
 
-  contractViewMethod<T, R>(chain: Chain, params: CallContractParams<T>): Promise<R> {
-    switch (chain) {
-      case SupportedELFChainId.MAIN_NET:
-        return this.aelfViewMethod!(params);
-      case SupportedELFChainId.TDVV_NET:
-        return this.tdvvViewMethod!(params);
-      case SupportedELFChainId.TDVW_NET:
-        return this.tdvwViewMethod!(params);
+  contractViewMethod<T, R>(chain: Chain, params: ICallContractParams<T>): Promise<R> {
+    const contractMethod = this.viewMethod;
+    if (!contractMethod) {
+      throw new Error('Error: Invalid chain ID');
     }
-    throw new Error('Error: Invalid chainId');
+    return contractMethod(params);
   }
 
-  callContract<T>(params: CallContractParams<T>) {
+  callContract<T>(params: ICallContractParams<T>) {
     return this.context?.callContract(params);
   }
 }

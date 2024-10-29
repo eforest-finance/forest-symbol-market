@@ -7,7 +7,9 @@ import Image from 'next/image';
 import { progressLineType } from 'components/CreateSeedProgressModal';
 import styles from './index.module.css';
 import useGetState from 'redux/state/useGetState';
-import { WalletType, useWebLogin } from 'aelf-web-login';
+import { useConnectWallet } from '@aelf-web-login/wallet-adapter-react';
+import { WalletTypeEnum } from '@aelf-web-login/wallet-adapter-base';
+
 import { useHiddenModal } from 'hooks/useHiddenModal';
 import { CreateTokenStepEnum } from 'pageComponents/create/hooks/useCreateService';
 
@@ -29,8 +31,10 @@ export const CreateTokenProgressModal = NiceModal.create(
     const [errorStep, setErrorStep] = useState<number | null>(null);
     const progress1 = useProgress();
     const progress2 = useProgress();
-    const { walletType } = useWebLogin();
-    const isPortkeyConnect = walletType === WalletType.portkey;
+    // const { walletType } = useWebLogin();
+    const { walletType } = useConnectWallet();
+
+    const isPortkeyConnect = walletType === WalletTypeEnum.aa;
     const { createTokenProgress } = useGetState();
 
     useEffect(() => {

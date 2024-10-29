@@ -1,14 +1,4 @@
-import {
-  useWebLogin,
-  WebLoginState,
-  WebLoginEvents,
-  useWebLoginEvent,
-  useLoginState,
-  WalletType,
-  useGetAccount,
-  usePortkeyLock,
-  useComponentFlex,
-} from 'aelf-web-login';
+import { PortkeyAssetProvider, Asset, did } from '@portkey/did-ui-react';
 import { message } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useGetToken } from './useGetToken';
@@ -30,6 +20,9 @@ import { ChainId } from '@portkey/types';
 import useDiscoverProvider from './useDiscoverProvider';
 import { MethodsWallet } from '@portkey/provider-types';
 import { setItemsFromLocal } from 'redux/reducer/info';
+import { useConnectWallet } from '@aelf-web-login/wallet-adapter-react';
+
+import { TSignatureParams, WalletTypeEnum } from '@aelf-web-login/wallet-adapter-base';
 
 export interface Manager {
   address: string;
@@ -37,119 +30,122 @@ export interface Manager {
 }
 export const useWalletInit = () => {
   const [, setLocalWalletInfo] = useLocalStorage<WalletInfoType>(storages.walletInfo);
-  const getAccountInAELF = useGetAccount('AELF');
+  const { getSignatureAndPublicKey } = useDiscoverProvider();
+
+  const {
+    walletInfo: wallet,
+    walletType,
+    disConnectWallet,
+    getSignature,
+    isConnected,
+    connectWallet,
+    getAccountByChainId,
+  } = useConnectWallet();
+
+  const getAccountInAELF = getAccountByChainId('AELF');
 
   const { getToken } = useGetToken();
   const { getUserInfo } = useUserInfo();
-  const { wallet, walletType } = useWebLogin();
 
   const backToHomeByRoute = useBackToHomeByRoute();
 
   // register Contract method
   useRegisterContractServiceMethod();
-  const callBack = useCallback(
-    (state: WebLoginState) => {
-      // if (state === WebLoginState.logining) {
-      //   message.info('logining');
-      // }
-      // if (state === WebLoginState.logouting) {
-      //   message.info('logouting');
-      // }
-      if (state === WebLoginState.lock) {
-        backToHomeByRoute();
-      }
-      // if (state === WebLoginState.initial) {
-      //   console.log('initial');
-      //   // message.info('initial');
-      // }
-      // if (state === WebLoginState.eagerly) {
-      //   console.log('eagerly');
-      //   // message.info('eagerly');
-      // }
-      if (state === WebLoginState.logined) {
-        // console.log('login success');
-        // message.info('login success');
-        const walletInfo: WalletInfoType = {
-          address: wallet?.address || '',
-          publicKey: wallet?.publicKey,
-          aelfChainAddress: '',
-        };
-        if (walletType === WalletType.elf) {
-          walletInfo.aelfChainAddress = wallet?.address || '';
-        }
-        if (walletType === WalletType.discover) {
-          walletInfo.discoverInfo = {
-            accounts: wallet.discoverInfo?.accounts || {},
-            address: wallet.discoverInfo?.address || '',
-            nickName: wallet.discoverInfo?.nickName,
-          };
-        }
-        if (walletType === WalletType.portkey) {
-          walletInfo.portkeyInfo = wallet.portkeyInfo;
-        }
-        getToken();
-        getUserInfo(wallet.address);
-        setTimeout(() => {
-          getAccountInAELF()
-            .then((aelfChainAddress: string) => {
-              walletInfo.aelfChainAddress = getOriginalAddress(aelfChainAddress);
-            })
-            .catch((error) => {
-              console.log('getAccountInAELF error', error);
-            })
-            .finally(() => {
-              dispatch(setWalletInfo(cloneDeep(walletInfo)));
-              setLocalWalletInfo(cloneDeep(walletInfo));
-            });
-        }, 1000);
-      }
-    },
-    [getAccountInAELF, getUserInfo, getToken, walletType, wallet, setLocalWalletInfo],
-  );
 
-  useLoginState(callBack);
+  const updateWallet = () => {
+    if (!isConnected) {
+      backToHomeByRoute();
+      return;
+    }
 
-  useWebLoginEvent(WebLoginEvents.LOGIN_ERROR, (error) => {
-    message.error(`${error.message || 'LOGIN_ERROR'}`);
-  });
-  useWebLoginEvent(WebLoginEvents.LOGINED, () => {
-    console.log('log in');
-    // message.success('log in');
-  });
-
-  useWebLoginEvent(WebLoginEvents.LOGOUT, () => {
-    // message.info('log out');
-    backToHomeByRoute();
-    localStorage.removeItem(storages.accountInfo);
-    localStorage.removeItem(storages.walletInfo);
-    dispatch(
-      setWalletInfo({
-        address: '',
+    if (isConnected) {
+      // console.log('login success');
+      // message.info('login success');
+      const walletInfo: WalletInfoType = {
+        address: wallet?.address || '',
+        publicKey: wallet?.extraInfo.publicKey,
         aelfChainAddress: '',
-      }),
-    );
-    dispatch(setItemsFromLocal([]));
-  });
-  useWebLoginEvent(WebLoginEvents.USER_CANCEL, () => {
-    console.log('user cancel');
-    // message.error('user cancel');
-  });
+      };
+      if (walletType === WalletTypeEnum.elf) {
+        walletInfo.aelfChainAddress = wallet?.address || '';
+      }
+      if (walletType === WalletTypeEnum.discover) {
+        walletInfo.discoverInfo = {
+          accounts: wallet?.extraInfo.accounts || {},
+          address: wallet.address || '',
+          nickName: wallet?.extraInfo?.nickName,
+        };
+      }
+
+      if (walletType === WalletTypeEnum.aa) {
+        walletInfo.portkeyInfo = Object.assign({}, walletInfo?.extraInfo?.portkeyInfo);
+      }
+      getToken();
+      getUserInfo(wallet.address);
+      setTimeout(() => {
+        getAccountInAELF()
+          .then((aelfChainAddress: string) => {
+            walletInfo.aelfChainAddress = getOriginalAddress(aelfChainAddress);
+          })
+          .catch((error) => {
+            console.log('getAccountInAELF error', error);
+          })
+          .finally(() => {
+            dispatch(setWalletInfo(cloneDeep(walletInfo)));
+            setLocalWalletInfo(cloneDeep(walletInfo));
+          });
+      }, 1000);
+    }
+  };
+
+  useEffect(() => {
+    if (isConnected) {
+      updateWallet();
+    }
+    if (!isConnected) {
+      backToHomeByRoute();
+      localStorage.removeItem(storages.accountInfo);
+      localStorage.removeItem(storages.walletInfo);
+      dispatch(
+        setWalletInfo({
+          address: '',
+          aelfChainAddress: '',
+        }),
+      );
+      dispatch(setItemsFromLocal([]));
+    }
+  }, [isConnected, wallet?.address]);
 };
 
 export const useWalletService = () => {
-  const { login, logout, loginState, walletType, wallet } = useWebLogin();
-  const { lock } = usePortkeyLock();
-  const isLogin = loginState === WebLoginState.logined;
-  return { login, logout, isLogin, walletType, lock, wallet };
+  // const { login, logout, loginState, walletType, wallet } = useWebLogin();
+  const {
+    walletInfo: wallet,
+    walletType,
+    disConnectWallet,
+    getSignature,
+    isConnected,
+    isLocking,
+    connectWallet,
+    getAccountByChainId,
+  } = useConnectWallet();
+  return { login: connectWallet, logout: disConnectWallet, isLogin: isConnected, walletType, lock: isLocking, wallet };
 };
 
 // Example Query whether the synchronization of the main sidechain is successful
 export const useWalletSyncCompleted = () => {
+  const { getWalletSyncIsCompleted } = useConnectWallet();
+
   const loading = useRef<boolean>(false);
   const info = store.getState().elfInfo.elfInfo;
-  const getAccountInAELF = useGetAccount('AELF');
-  const { wallet, walletType } = useWebLogin();
+
   // console.log(walletType, wallet, 'walletType');
+
+  const getAccountInfoSync = async (chainId = 'AELF') => {
+    const address = await getWalletSyncIsCompleted(chainId);
+    return address;
+  };
+
   const tipsModal = useModal(TipsModal);
   const { walletInfo } = cloneDeep(useSelector((store: any) => store.userInfo));
   const [, setLocalWalletInfo] = useLocalStorage<WalletInfoType>(storages.walletInfo);
@@ -160,93 +156,24 @@ export const useWalletSyncCompleted = () => {
     return '';
   };
 
-  const { did } = useComponentFlex();
-
-  const getAccount = useCallback(async () => {
-    try {
-      const aelfChainAddress = await getAccountInAELF();
-
-      walletInfo.aelfChainAddress = getOriginalAddress(aelfChainAddress);
-
-      dispatch(setWalletInfo(walletInfo));
-      loading.current = false;
-      if (!aelfChainAddress) {
-        return '';
-      } else {
-        return walletInfo.aelfChainAddress;
-      }
-    } catch (error) {
-      return errorFunc();
-    }
-  }, [walletInfo, getAccountInAELF, setLocalWalletInfo]);
-
-  const getAccountInfoSync = useCallback(
-    async (chainId = 'AELF') => {
-      if (loading.current) return '';
-      let caHash;
-      let address: any;
-      if (walletType === WalletType.elf) {
-        return walletInfo.aelfChainAddress;
-      }
-      if (walletType === WalletType.portkey) {
-        loading.current = true;
-        const didWalletInfo = wallet.portkeyInfo;
-        caHash = didWalletInfo?.caInfo?.caHash;
-        address = didWalletInfo?.walletInfo?.address;
-        const currentChainId = chainId as ChainId;
-        try {
-          const holder = await did.didWallet.getHolderInfoByContract({
-            chainId: currentChainId,
-            caHash: caHash as string,
-          });
-          const filteredHolders = holder.managerInfos.filter((manager) => manager?.address === address);
-          if (filteredHolders.length) {
-            return await getAccount();
-          } else {
-            return errorFunc();
-          }
-        } catch (error) {
-          return errorFunc();
-        }
-      } else {
-        loading.current = true;
-        try {
-          const provider = await discoverProvider();
-          const status = await provider?.request({
-            method: MethodsWallet.GET_WALLET_MANAGER_SYNC_STATUS,
-            payload: { chainId: info.curChain },
-          });
-          if (status) {
-            return await getAccount();
-          } else {
-            return errorFunc();
-          }
-        } catch (error) {
-          return errorFunc();
-        }
-      }
-    },
-    [wallet, walletType, walletInfo],
-  );
   return { getAccountInfoSync };
 };
 
 export const useCheckLoginAndToken = () => {
-  const { loginState, login } = useWebLogin();
-  const isLogin = loginState === WebLoginState.logined;
   const { getToken } = useGetToken();
   const [hasToken, setHasToken] = useState<Boolean>(false);
+  const { connectWallet, disConnectWallet, isConnected, walletInfo, walletType } = useConnectWallet();
 
   const checkLogin = async () => {
     const accountInfo = JSON.parse(localStorage.getItem(storages.accountInfo) || '{}');
-    if (isLogin) {
+    if (isConnected) {
       if (accountInfo.token) {
         setHasToken(true);
         return;
       }
       getToken();
     }
-    login();
+    connectWallet();
   };
 
   useEffect(() => {
@@ -258,43 +185,12 @@ export const useCheckLoginAndToken = () => {
   }, []);
 
   return {
-    isOK: isLogin && hasToken,
+    isOK: isConnected && hasToken,
     checkLogin,
   };
 };
 
 type CallBackType = () => void;
-
-export const useElfWebLoginLifeCircleHookService = () => {
-  const { login } = useWebLogin();
-
-  const [hooksMap, setHooksMap] = useState<{
-    [key in WebLoginState]?: CallBackType[];
-  }>({});
-
-  const registerHook = (name: WebLoginState, callBack: CallBackType) => {
-    const hooks = (hooksMap[name] || []).concat(callBack);
-    setHooksMap({
-      ...hooksMap,
-      [name]: hooks,
-    });
-  };
-
-  useWebLoginEvent(WebLoginEvents.LOGINED, async () => {
-    const hooks = hooksMap[WebLoginState.logined];
-    if (hooks?.length) {
-      for (let i = 0; i < hooks.length; ++i) {
-        console.log(`await hooks ${i} execute`);
-        await hooks[i]();
-      }
-    }
-  });
-
-  return {
-    login,
-    registerHook,
-  };
-};
 
 export const useBroadcastChannel = () => {
   useEffect(() => {

@@ -5,7 +5,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useWalletService } from 'hooks/useWallet';
 import { Button, MenuProps } from 'antd';
 import { useState, useMemo, memo, useEffect, useCallback } from 'react';
-import { WalletType } from 'aelf-web-login';
+import { TSignatureParams, WalletTypeEnum } from '@aelf-web-login/wallet-adapter-base';
+
 import { useSelector } from 'redux/store';
 import useBackToHomeByRoute from 'hooks/useBackToHomeByRoute';
 import clsx from 'clsx';
@@ -62,7 +63,7 @@ const DropMenuMy = ({ isMobile }: { isMobile: boolean }) => {
         href: '',
       },
     ];
-    if (walletType === WalletType.portkey) {
+    if (walletType === WalletTypeEnum.aa) {
       arr.unshift({
         label: 'My Assets',
         href: '/assets',
