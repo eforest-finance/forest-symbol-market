@@ -111,7 +111,7 @@ export default function Token() {
   };
   const showModal = useRef<boolean>(false);
   // const { loginState } = useWebLogin();
-  const { walletInfo, walletType, disConnectWallet, getSignature, isConnected } = useConnectWallet();
+  const { walletType, disConnectWallet, getSignature, isConnected } = useConnectWallet();
 
   useEffect(() => {
     const data = tableProps.dataSource;

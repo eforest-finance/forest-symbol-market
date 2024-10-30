@@ -31,7 +31,6 @@ export const multiTokenContractRequest = async <T, R>(
   );
 
   const CallContractMethod = GetContractServiceMethod(curChain, options?.type);
-
   try {
     const res: R = await CallContractMethod({
       contractAddress,

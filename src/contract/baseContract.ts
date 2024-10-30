@@ -80,7 +80,6 @@ export function GetContractServiceMethod(
   // }
 
   const { callSendMethod, callViewMethod } = contractMethodMap as ICallMethodMap;
-
   if (type === ContractMethodType.VIEW) {
     return callViewMethod;
   } else {

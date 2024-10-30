@@ -42,8 +42,7 @@ export const useWalletInit = () => {
     getAccountByChainId,
   } = useConnectWallet();
 
-  const getAccountInAELF = getAccountByChainId('AELF');
-
+  // const getAccountInAELF = getAccountByChainId('AELF');
   const { getToken } = useGetToken();
   const { getUserInfo } = useUserInfo();
 
@@ -58,7 +57,7 @@ export const useWalletInit = () => {
       return;
     }
 
-    if (isConnected) {
+    if (isConnected && wallet) {
       // console.log('login success');
       // message.info('login success');
       const walletInfo: WalletInfoType = {
@@ -80,10 +79,13 @@ export const useWalletInit = () => {
       if (walletType === WalletTypeEnum.aa) {
         walletInfo.portkeyInfo = Object.assign({}, walletInfo?.extraInfo?.portkeyInfo);
       }
+
+      console.log(wallet);
+
       getToken();
       getUserInfo(wallet.address);
       setTimeout(() => {
-        getAccountInAELF()
+        getAccountByChainId('AELF')
           .then((aelfChainAddress: string) => {
             walletInfo.aelfChainAddress = getOriginalAddress(aelfChainAddress);
           })

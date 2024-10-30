@@ -72,10 +72,15 @@ function Personal() {
 
   const getAccountInAELF = getAccountByChainId('AELF');
 
-  const { run, data, cancel } = useRequest(getAccountInAELF, {
-    manual: true,
-    pollingInterval: 3000,
-  });
+  const { run, data, cancel } = useRequest(
+    () => {
+      return getAccountInAELF;
+    },
+    {
+      manual: true,
+      pollingInterval: 3000,
+    },
+  );
   const { getUserInfo } = useUserInfo();
   const [userInfo, setUserInfo] = useState<UserInfoType | IUsersAddressRes>(logOutUserInfo);
   const [openAddress, setOpenAddress] = useState<boolean>(false);

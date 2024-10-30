@@ -268,7 +268,6 @@ export function useCreateService() {
 
   const create = async (params: ICreateTokenParams, tokenLogoImage: string): Promise<Boolean | FailStepEnum> => {
     const info = store.getState().elfInfo.elfInfo;
-
     const result = await createContract({
       ...params,
       externalInfo: {
@@ -315,7 +314,6 @@ export function useCreateService() {
         error: false,
       }),
     );
-
     if (params.issueChain !== SupportedELFChainId.MAIN_NET) {
       // wait for confirm
       const requestParams = {
