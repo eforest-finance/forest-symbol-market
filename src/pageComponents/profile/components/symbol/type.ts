@@ -13,7 +13,7 @@ export enum TokenType {
   NFT,
 }
 
-export type ChainType = 'MainChain AELF' | 'SideChain tDVV';
+export type ChainType = 'aelf MainChain' | 'aelf dAppChain';
 
 export enum FilterTypeEnum {
   Type = 'Type',
@@ -75,11 +75,11 @@ export const getFilterList = (isMobile: boolean, ChainId: string) => {
           value: 'All',
         },
         {
-          label: getChainPrefix(SupportedELFChainId.MAIN_NET),
+          label: 'aelf MainChain',
           value: 'AELF',
         },
         {
-          label: getChainPrefix(ChainId as SupportedELFChainId),
+          label: 'aelf dAppChain',
           value: ChainId,
         },
       ],
