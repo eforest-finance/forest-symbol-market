@@ -45,7 +45,7 @@ export const CreateSeedProgressModal = NiceModal.create((props) => {
     return [
       {
         title: 'Create the SEED',
-        subTitle: 'The SEED will be created on the MainChain.',
+        subTitle: 'The SEED will be created on the aelf MainChain.',
         percent: progress2.percent > 0 ? 100 : progress1.percent,
         progressTip: 'About 15 sec',
         status: (errorStep === 1 ? 'exception' : 'normal') as progressLineType,
@@ -145,9 +145,11 @@ export const CreateSeedProgressModal = NiceModal.create((props) => {
   );
 
   const waitingTip = useMemo(() => {
-    return ['Creating SEED on the MainChain', 'Synchronising SEED on the SideChain', 'Creating an auction protocol'][
-      currentStep
-    ];
+    return [
+      'Creating SEED on the aelf MainChain',
+      'Synchronising SEED on the aelf dAppChain',
+      'Creating an auction protocol',
+    ][currentStep];
   }, [currentStep]);
 
   const handleRetry = () => {
