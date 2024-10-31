@@ -408,7 +408,7 @@ export default function Create() {
                 return Promise.reject(
                   new Error(
                     `Please enter a correct address on ${
-                      formValues.issueChain === 'AELF' ? 'MainChain' : 'SideChain'
+                      formValues.issueChain === 'AELF' ? 'aelf MainChain' : 'aelf dAppChain'
                     } ${formValues.issueChain}.`,
                   ),
                 );
@@ -439,7 +439,7 @@ export default function Create() {
         name="isBurnable"
         label="Burnable"
         tooltip={getTooltipProps(
-          "Whether the token you're creating can be burned. Please note: Unburnable tokens cannot be internally transferred across chains within the aelf blockchain, such as between the MainChain and SideChains.",
+          "Whether the token you're creating can be burned. Please note: Unburnable tokens cannot be internally transferred across chains within the aelf blockchain, such as between the aelf MainChain and aelf dAppChains.",
         )}
         rules={[
           {
