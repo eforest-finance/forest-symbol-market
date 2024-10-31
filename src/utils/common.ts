@@ -24,7 +24,7 @@ export const getPage = (skipCount: number | string, pageSize: number) => {
 };
 
 export const getChainPrefix = (chainId: SupportedELFChainId) => {
-  return (chainId === SupportedELFChainId.MAIN_NET ? 'MainChain ' : 'SideChain ') + chainId;
+  return chainId === SupportedELFChainId.MAIN_NET ? 'aelf MainChain' : 'aelf dAppChain';
 };
 
 // For now, just think about the month

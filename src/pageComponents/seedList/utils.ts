@@ -25,8 +25,8 @@ const getStatusOptions = (SeedTypes: SeedTypesEnum): SourceItemType[] => {
 
 const getBlockchainOptions = (ChainId: string): SourceItemType[] => {
   return [
-    { value: 'AELF', label: 'MainChain AELF' },
-    { value: ChainId, label: 'SideChain ' + ChainId },
+    { value: 'AELF', label: 'aelf MainChain' },
+    { value: ChainId, label: 'aelf dAppChain' },
   ];
 };
 

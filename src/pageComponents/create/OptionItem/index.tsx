@@ -13,9 +13,9 @@ interface IOptionItemProps {
 
 export function OptionItem({ detail, onClickHandler, selected }: IOptionItemProps) {
   const chainStr = {
-    AELF: 'MainChain AELF',
-    tDVV: 'SideChain tDVV',
-    tDVW: 'SideChain tDVW',
+    AELF: 'aelf MainChain',
+    tDVV: 'aelf dAppChain',
+    tDVW: 'aelf dAppChain',
   }[detail?.chainId];
   const { isMobile } = useResponsive();
   return (

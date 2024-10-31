@@ -29,8 +29,6 @@ function ELFAddress({
   chain: Chain;
   loading?: boolean;
 }) {
-  const prefix = chain === SupportedELFChainId.MAIN_NET ? 'MainChain' : 'SideChain';
-
   const renderLoading = () => {
     return (
       <span className="flex items-center">
@@ -59,8 +57,8 @@ function ELFAddress({
 
   return (
     <div className={styles.address}>
-      <span className="text-xs text-[#796F94] mr-1">{`${prefix} ${
-        chain === SupportedELFChainId.MAIN_NET ? 'AELF' : chain
+      <span className="text-xs text-[#796F94] mr-1">{`${
+        chain === SupportedELFChainId.MAIN_NET ? 'aelf MainChain' : 'aelf dAppChain'
       } ${process.env.NEXT_PUBLIC_APP_ENV === 'test' ? 'Testnet Address' : 'Address'}:`}</span>
       {!loading ? renderAddress() : renderLoading()}
     </div>
