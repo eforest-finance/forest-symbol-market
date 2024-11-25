@@ -239,7 +239,7 @@ export default function Create() {
               // console.log(seedInfo, 'setSeedInfo');
               if (seedInfo.current?.chainId !== SupportedELFChainId.MAIN_NET) {
                 return Promise.reject(
-                  new Error(`Can't create the token. Please transfer this SEED to MainChain AELF before you continue.`),
+                  new Error(`Can't create the token. Please transfer this SEED to aelf MainChain before you continue.`),
                 );
               }
               return Promise.resolve();
@@ -387,8 +387,8 @@ export default function Create() {
           placeholder="Please select issuer chain"
           suffixIcon={<ArrowDown />}
           popupClassName={styles['select-custom']}>
-          <Select.Option value={curChain}>SideChain {curChain}</Select.Option>
-          <Select.Option value="AELF">MainChain AELF</Select.Option>
+          <Select.Option value={curChain}>aelf dAppChain</Select.Option>
+          <Select.Option value="AELF">aelf MainChain</Select.Option>
         </Select>
       </Form.Item>
       <Form.Item
@@ -408,7 +408,7 @@ export default function Create() {
                 return Promise.reject(
                   new Error(
                     `Please enter a correct address on ${
-                      formValues.issueChain === 'AELF' ? 'MainChain' : 'SideChain'
+                      formValues.issueChain === 'AELF' ? 'aelf MainChain' : 'aelf dAppChain'
                     } ${formValues.issueChain}.`,
                   ),
                 );
@@ -439,7 +439,7 @@ export default function Create() {
         name="isBurnable"
         label="Burnable"
         tooltip={getTooltipProps(
-          "Whether the token you're creating can be burned. Please note: Unburnable tokens cannot be internally transferred across chains within the aelf blockchain, such as between the MainChain and SideChains.",
+          "Whether the token you're creating can be burned. Please note: Unburnable tokens cannot be internally transferred across chains within the aelf blockchain, such as between the aelf MainChain and aelf dAppChains.",
         )}
         rules={[
           {

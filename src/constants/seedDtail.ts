@@ -27,7 +27,7 @@ export enum TOKEN_TYPE {
 export enum TipsMessage {
   Synchronizing = 'Syncing on-chain account info',
   GoToForestTip = 'This feature is under preparation on Forest and is therefore unavailable at the moment. You can explore other functions within the Symbol Market.',
-  viewSeedInfoOnMainChain = "To view SEED info, please transfer this SEED to your address on SideChain tDVV beforehand. Once it's on the SideChain, you can view its info on Forest.",
+  viewSeedInfoOnMainChain = "To view SEED info, please transfer this SEED to your address on aelf dAppChain beforehand. Once it's on the aelf dAppChain, you can view its info on Forest.",
 }
 
 export const TOKEN_TYPES = ['FT', 'NFT'];

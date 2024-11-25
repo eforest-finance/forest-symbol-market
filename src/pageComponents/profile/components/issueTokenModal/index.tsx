@@ -103,7 +103,7 @@ const IssueTokenModal = NiceModal.create((props: IModalProps) => {
         return Promise.reject(
           new Error(
             `Please enter a correct address on ${
-              originIssueChain === 'AELF' ? 'MainChain' : 'SideChain'
+              originIssueChain === 'AELF' ? 'aelf MainChain' : 'aelf dAppChain'
             } ${originIssueChain}.`,
           ),
         );
