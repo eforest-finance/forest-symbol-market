@@ -1,7 +1,4 @@
 import { SEED_STATUS } from 'constants/seedDtail';
-import { SupportedELFChainId } from 'types';
-import { getChainPrefix } from 'utils/common';
-import { ChainId } from '@portkey/types';
 
 export enum SeedStatusEnum {
   Used = SEED_STATUS.REGISTERED,

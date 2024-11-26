@@ -1,6 +1,4 @@
-import { PortkeyAssetProvider, Asset, did } from '@portkey/did-ui-react';
-import { message } from 'antd';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGetToken } from './useGetToken';
 import { getOriginalAddress } from 'utils/addressFormatting';
 import { dispatch, store } from 'redux/store';
@@ -16,13 +14,11 @@ import { useSelector } from 'react-redux';
 import { useModal } from '@ebay/nice-modal-react';
 import TipsModal from 'pageComponents/profile/components/TipsModal';
 import { TipsMessage } from 'constants/seedDtail';
-import { ChainId } from '@portkey/types';
 import useDiscoverProvider from './useDiscoverProvider';
-import { MethodsWallet } from '@portkey/provider-types';
 import { setItemsFromLocal } from 'redux/reducer/info';
 import { useConnectWallet } from '@aelf-web-login/wallet-adapter-react';
 
-import { TSignatureParams, WalletTypeEnum } from '@aelf-web-login/wallet-adapter-base';
+import { WalletTypeEnum } from '@aelf-web-login/wallet-adapter-base';
 
 export interface Manager {
   address: string;
@@ -32,15 +28,7 @@ export const useWalletInit = () => {
   const [, setLocalWalletInfo] = useLocalStorage<WalletInfoType>(storages.walletInfo);
   const { getSignatureAndPublicKey } = useDiscoverProvider();
 
-  const {
-    walletInfo: wallet,
-    walletType,
-    disConnectWallet,
-    getSignature,
-    isConnected,
-    connectWallet,
-    getAccountByChainId,
-  } = useConnectWallet();
+  const { walletInfo: wallet, walletType, isConnected, getAccountByChainId } = useConnectWallet();
 
   // const getAccountInAELF = getAccountByChainId('AELF');
   const { getToken } = useGetToken();
@@ -125,11 +113,9 @@ export const useWalletService = () => {
     walletInfo: wallet,
     walletType,
     disConnectWallet,
-    getSignature,
     isConnected,
     isLocking,
     connectWallet,
-    getAccountByChainId,
   } = useConnectWallet();
   return { login: connectWallet, logout: disConnectWallet, isLogin: isConnected, walletType, lock: isLocking, wallet };
 };
@@ -191,8 +177,6 @@ export const useCheckLoginAndToken = () => {
     checkLogin,
   };
 };
-
-type CallBackType = () => void;
 
 export const useBroadcastChannel = () => {
   useEffect(() => {

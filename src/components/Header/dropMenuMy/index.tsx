@@ -6,6 +6,7 @@ import { useWalletService } from 'hooks/useWallet';
 import { Button, MenuProps } from 'antd';
 import { useState, useMemo, memo, useEffect, useCallback } from 'react';
 import { TSignatureParams, WalletTypeEnum } from '@aelf-web-login/wallet-adapter-base';
+import { useConnectWallet } from '@aelf-web-login/wallet-adapter-react';
 
 import { useSelector } from 'redux/store';
 import useBackToHomeByRoute from 'hooks/useBackToHomeByRoute';
@@ -81,7 +82,9 @@ const DropMenuMy = ({ isMobile }: { isMobile: boolean }) => {
     return arr;
   }, [walletType]);
 
-  const onClickHandler = (ele: IMenuItem) => {
+  const { clearManagerReadonlyStatus } = useConnectWallet();
+
+  const onClickHandler = async (ele: IMenuItem) => {
     setShowDropMenu(false);
     if (ele.href) {
       if (pathName.includes('/profile') && ele.href === '/profile') {
@@ -90,6 +93,12 @@ const DropMenuMy = ({ isMobile }: { isMobile: boolean }) => {
         if (ele.href === '/profile') {
           router.push(`${ele.href}/${address}/${ele.hash}`);
         } else {
+          await clearManagerReadonlyStatus({
+            // 因为需要同时清除两条链，所以主侧链都需要传
+            chainIdList: ['AELF'],
+            // caHash, 可从 walletInfo.extraInfo?.portkeyInfo.caInfo.caHash 获取
+            caHash: walletInfo.extraInfo?.portkeyInfo.caInfo.caHash,
+          });
           router.push(`${ele.href}`);
         }
       }
