@@ -1,8 +1,10 @@
+import { IContractOptions, ContractMethodType, SupportedELFChainId, IContractError } from 'types';
+
 import { multiTokenContractRequest } from './multiTokenContract';
-import { tokenAdapterContractRequest } from './tokenAdapterContract';
 import { proxyContractRequest } from './proxyAccountContract';
 import { symbolRegisterContractRequest } from './symbolRegisterContrack';
-import { IContractOptions, ContractMethodType, SupportedELFChainId, IContractError } from 'types';
+import { tokenAdapterContractRequest } from './tokenAdapterContract';
+
 export interface IGetBalanceParams {
   symbol: string;
   owner: string;
@@ -53,19 +55,12 @@ export const ForwardCallByContract = async (params: IForwardCallParams, chain?: 
   return res;
 };
 
-export const GetProxyAccountByContract = async (
-  address: string,
-  chain?: Chain,
-): Promise<IGetProxyAccountByProxyAccountAddressRes> => {
-  const res: IGetProxyAccountByProxyAccountAddressRes | ISendResult = await proxyContractRequest(
-    'GetProxyAccountByProxyAccountAddress',
-    address,
-    {
-      chain,
-      type: ContractMethodType.VIEW,
-    },
-  );
-  return res as IGetProxyAccountByProxyAccountAddressRes;
+export const GetProxyAccountByContract = async (address: string, chain?: Chain): Promise<any> => {
+  const res = await proxyContractRequest('GetProxyAccountByProxyAccountAddress', address, {
+    chain,
+    type: ContractMethodType.VIEW,
+  });
+  return res;
 };
 
 export const BuyByContract = async ({ symbol, issuer }: IBuyParams) => {
