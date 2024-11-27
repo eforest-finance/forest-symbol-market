@@ -33,9 +33,6 @@ export const proxyContractRequest = async <T, R>(
 
   const CallContractMethod = GetContractServiceMethod(curChain, options?.type);
 
-  // eslint-disable-next-line no-debugger
-  debugger;
-
   try {
     const res: R = await CallContractMethod({
       chainId: curChain,

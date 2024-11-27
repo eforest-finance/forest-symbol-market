@@ -357,8 +357,7 @@ export function useCreateService() {
       const info = store.getState().elfInfo.elfInfo;
 
       const hash = await GetProxyAccountByContract(proxyIssuerAddress, chain);
-      // eslint-disable-next-line no-debugger
-      debugger;
+
       const issueInputMessage = getProtoObject().lookupType('IssueInput');
 
       const issueArgs = await encodedParams(issueInputMessage.resolveAll(), params);
