@@ -184,13 +184,13 @@ export function useCreateService() {
         },
       );
 
-      if (allowance.error) {
-        message.error(formatErrorMsg(allowance.errorMessage?.message || 'unknown error'));
+      if (allowance?.data.error) {
+        message.error(formatErrorMsg(allowance.data.errorMessage?.message || 'unknown error'));
         throw new Error('createContractByCollection fail');
       }
 
       let approveRes;
-      if (Number(allowance?.allowance) < 1) {
+      if (Number(allowance?.data.allowance) < 1) {
         approveRes = await ApproveByContract(
           {
             spender: info?.tokenAdapterMainAddress,

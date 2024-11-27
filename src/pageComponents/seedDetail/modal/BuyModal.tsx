@@ -1,8 +1,8 @@
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import BaseModal from 'components/Modal';
-import { GetBalanceByContract } from 'contract';
-import { useSelector } from 'redux/store';
+import { ApproveByContract, GetAllowanceByContract, GetBalanceByContract } from 'contract';
+import { useSelector, store } from 'redux/store';
 import { SupportedELFChainId } from 'types';
 
 import { ReactComponent as UnionSvg } from 'assets/images/Union.svg';
@@ -19,6 +19,8 @@ import { TransactionFailedModal } from './TransactionFailedModal';
 import { ReactComponent as ErrorIcon } from 'assets/images/error-icon.svg';
 import styles from './style.module.css';
 import { formatErrorMsg } from 'utils/formatErrorMsg';
+import { LoginStatusEnum } from '@aelf-web-login/wallet-adapter-base';
+import { useConnectWallet } from '@aelf-web-login/wallet-adapter-react';
 
 interface IPayModalProps {
   seedDetailInfo?: ISeedDetailInfo;
@@ -26,6 +28,8 @@ interface IPayModalProps {
 }
 
 export const ConfirmPayModal = NiceModal.create(({ mainAddress }: IPayModalProps) => {
+  const info = store.getState().elfInfo.elfInfo;
+
   const { seedInfo: seedDetailInfo } = useSelector((store) => store.seedInfo);
   const modal = useModal();
   const tipModal = useModal(TipsModal);
@@ -63,6 +67,45 @@ export const ConfirmPayModal = NiceModal.create(({ mainAddress }: IPayModalProps
 
   const onBuy = async () => {
     if (!seedDetailInfo?.symbol) return;
+
+    const allowance = await GetAllowanceByContract(
+      {
+        spender: info?.symbolRegisterMainAddress || '',
+        symbol: 'ELF',
+        owner: walletInfo.address || '',
+      },
+      {
+        chain: 'AELF',
+      },
+    );
+
+    if (allowance?.data.error) {
+      message.error(formatErrorMsg(allowance.errorMessage?.message || 'unknown error'));
+      throw new Error('createContractByCollection fail');
+    }
+
+    let approveRes;
+    if (Number(allowance?.data.allowance) < allPrice?.tokenPriceTotal * 10 ** 8) {
+      try {
+        approveRes = await ApproveByContract(
+          {
+            spender: info?.symbolRegisterMainAddress,
+            symbol: 'ELF',
+            amount: allPrice?.tokenPriceTotal * 10 ** 8,
+          },
+          {
+            chain: 'AELF',
+          },
+        );
+
+        console.log('approveRes', approveRes);
+      } catch (error) {
+        const resError = error as IContractError;
+        message.error(resError.errorMessage?.message);
+        return;
+      }
+    }
+
     // if (Number(balance) <= Number(allPrice.tokenPriceTotal)) {
     //   tipModal.show({
     //     content: 'Insufficient Balance.',
@@ -91,18 +134,26 @@ export const ConfirmPayModal = NiceModal.create(({ mainAddress }: IPayModalProps
       });
   };
 
+  const { loginOnChainStatus } = useConnectWallet();
+
   useEffect(() => {
     async function getBalance() {
       setLoadingBalance(true);
+
+      if (loginOnChainStatus !== LoginStatusEnum.SUCCESS) {
+        return;
+      }
+
       try {
-        const { balance } = await GetBalanceByContract(
+        const Balance = await GetBalanceByContract(
           {
             owner: walletInfo?.aelfChainAddress || mainAddress,
             symbol: 'ELF',
           },
-          { chain: SupportedELFChainId.MAIN_NET },
+          { chain: 'AELF' },
         );
-        setBalance(Number(balance) / 10 ** 8);
+
+        setBalance(Number(Balance?.data.balance) / 10 ** 8);
         setLoadingBalance(false);
       } catch (error) {
         setLoadingBalance(false);
@@ -111,7 +162,7 @@ export const ConfirmPayModal = NiceModal.create(({ mainAddress }: IPayModalProps
     }
 
     getBalance();
-  }, [walletInfo?.aelfChainAddress, mainAddress]);
+  }, [walletInfo?.aelfChainAddress, mainAddress, walletInfo, loginOnChainStatus]);
   const disabled = useMemo(() => {
     return Number(balance) <= Number(allPrice.tokenPriceTotal);
   }, [balance, allPrice]);
