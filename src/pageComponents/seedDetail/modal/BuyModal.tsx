@@ -3,7 +3,6 @@ import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import BaseModal from 'components/Modal';
 import { ApproveByContract, GetAllowanceByContract, GetBalanceByContract } from 'contract';
 import { useSelector, store } from 'redux/store';
-import { SupportedELFChainId } from 'types';
 
 import { ReactComponent as UnionSvg } from 'assets/images/Union.svg';
 import { useEffect, useMemo, useState } from 'react';
@@ -19,7 +18,6 @@ import { TransactionFailedModal } from './TransactionFailedModal';
 import { ReactComponent as ErrorIcon } from 'assets/images/error-icon.svg';
 import styles from './style.module.css';
 import { formatErrorMsg } from 'utils/formatErrorMsg';
-import { LoginStatusEnum } from '@aelf-web-login/wallet-adapter-base';
 import { useConnectWallet } from '@aelf-web-login/wallet-adapter-react';
 
 interface IPayModalProps {
@@ -139,10 +137,6 @@ export const ConfirmPayModal = NiceModal.create(({ mainAddress }: IPayModalProps
   useEffect(() => {
     async function getBalance() {
       setLoadingBalance(true);
-
-      if (loginOnChainStatus !== LoginStatusEnum.SUCCESS) {
-        return;
-      }
 
       try {
         const Balance = await GetBalanceByContract(
