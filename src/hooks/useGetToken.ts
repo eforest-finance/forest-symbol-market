@@ -22,7 +22,7 @@ export const useGetToken = () => {
       localStorage.setItem(
         storages.accountInfo,
         JSON.stringify({
-          account: wallet.address,
+          account: wallet?.address,
           token: res.access_token,
           expirationTime: Date.now() + res.expires_in * 1000,
         }),
@@ -67,9 +67,11 @@ export const useGetToken = () => {
     } else {
       sign = await getSignature({
         appName: 'forest',
-        address: wallet.address,
-        signInfo: AElf.utils.sha256(`${wallet.address}-${timestamp}`),
+        address: wallet?.address || '',
+        signInfo: AElf.utils.sha256(`${wallet?.address}-${timestamp}`),
       });
+
+      console.log('sign', sign);
       if (sign?.errorMessage) {
         message.error(sign.errorMessage);
         return;
@@ -86,14 +88,15 @@ export const useGetToken = () => {
     // }
     let extraParam = {};
     if (walletType === WalletTypeEnum.elf) {
+      console.log('wallet----wallet', wallet);
       extraParam = {
-        pubkey: wallet.publicKey,
+        pubkey: wallet?.extraInfo.publicKey,
         source: 'nightElf',
       };
     }
 
     if (walletType === WalletTypeEnum.discover) {
-      const accounts = wallet.extraInfo.accounts;
+      const accounts = wallet?.extraInfo.accounts;
       const accountInfo = Object.keys(accounts).map((key) => {
         return {
           chainId: key,
