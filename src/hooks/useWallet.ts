@@ -19,6 +19,7 @@ import { setItemsFromLocal } from 'redux/reducer/info';
 import { useConnectWallet } from '@aelf-web-login/wallet-adapter-react';
 
 import { WalletTypeEnum } from '@aelf-web-login/wallet-adapter-base';
+import { message } from 'antd';
 
 export interface Manager {
   address: string;
@@ -65,7 +66,7 @@ export const useWalletInit = () => {
       }
 
       if (walletType === WalletTypeEnum.aa) {
-        walletInfo.portkeyInfo = Object.assign({}, walletInfo?.extraInfo?.portkeyInfo);
+        walletInfo.portkeyInfo = Object.assign({}, wallet?.extraInfo?.portkeyInfo);
       }
 
       console.log(wallet);
@@ -116,7 +117,13 @@ export const useWalletService = () => {
     isConnected,
     isLocking,
     connectWallet,
+    loginError,
   } = useConnectWallet();
+  useEffect(() => {
+    if (loginError) {
+      message.error(loginError.nativeError.message);
+    }
+  }, [loginError]);
   return { login: connectWallet, logout: disConnectWallet, isLogin: isConnected, walletType, lock: isLocking, wallet };
 };
 
