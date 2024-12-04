@@ -2820,7 +2820,7 @@
   dependencies:
     "@portkey/provider-types" "^2.3.5-alpha.5"
 
-"@portkey/did-ui-react@^2.15.10-alpha.0":
+"@portkey/did-ui-react@^2.15.10":
   version "2.15.10"
   resolved "https://registry.yarnpkg.com/@portkey/did-ui-react/-/did-ui-react-2.15.10.tgz#1258ecfe4080337d7475a216908a67a73020a0b3"
   integrity sha512-sut6i6TXt4pec1ZnnBvklA7tQf4FFhRjETW7Oiwt5KuDyMhZwpSv3TloxmgPhyMw0jzkD03aCgC3Y7GXTAqh3Q==
