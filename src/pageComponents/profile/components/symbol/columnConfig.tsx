@@ -8,10 +8,12 @@ import Image from 'next/image';
 export default function getColumns({
   isMobile,
   create,
+  onRenewal,
   navigateToPage,
 }: {
   isMobile: boolean | undefined;
   create: (info: ISeedInfo) => void;
+  onRenewal?: any;
   navigateToPage: (info: ISeedInfo) => void;
 }): ColumnsType<ISeedInfo> {
   return isMobile
@@ -58,15 +60,26 @@ export default function getColumns({
             SEED_STATUS.REGISTERED === record.status ? (
               ''
             ) : (
-              <Button
-                className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
-                type="primary"
-                onClick={(e) => {
-                  create(record);
-                  e.stopPropagation();
-                }}>
-                Create {text === 'FT' ? 'Token' : text}
-              </Button>
+              <div className="flex flex-col gap-2">
+                <Button
+                  className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
+                  type="primary"
+                  onClick={(e) => {
+                    create(record);
+                    e.stopPropagation();
+                  }}>
+                  Create {text === 'FT' ? 'Token' : text}
+                </Button>
+                <Button
+                  className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
+                  type="primary"
+                  onClick={(e) => {
+                    onRenewal(record);
+                    e.stopPropagation();
+                  }}>
+                  Renewal
+                </Button>
+              </div>
             ),
         },
       ]
@@ -131,15 +144,26 @@ export default function getColumns({
             SEED_STATUS.REGISTERED === record.status ? (
               ''
             ) : (
-              <Button
-                className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
-                type="primary"
-                onClick={(e) => {
-                  create(record);
-                  e.stopPropagation();
-                }}>
-                Create {text === 'FT' ? 'Token' : text}
-              </Button>
+              <div className="flex flex-col lg:flex-row items-center gap-2">
+                <Button
+                  className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
+                  type="primary"
+                  onClick={(e) => {
+                    create(record);
+                    e.stopPropagation();
+                  }}>
+                  Create {text === 'FT' ? 'Token' : text}
+                </Button>
+                <Button
+                  className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
+                  type="primary"
+                  onClick={(e) => {
+                    onRenewal(record);
+                    e.stopPropagation();
+                  }}>
+                  Renewal
+                </Button>
+              </div>
             ),
         },
       ];

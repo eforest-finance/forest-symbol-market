@@ -70,3 +70,13 @@ export const BuyByContract = async ({ symbol, issuer }: IBuyParams) => {
   });
   return res;
 };
+
+export const RegularSeedRenewContract = async (params: any) => {
+  const res = await symbolRegisterContractRequest('RegularSeedRenew', params);
+  return res;
+};
+
+export const SpecialSeedRenewContract = async (params: any) => {
+  const res = await symbolRegisterContractRequest('SpecialSeedRenew', params);
+  return res;
+};

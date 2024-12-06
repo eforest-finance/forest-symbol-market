@@ -137,7 +137,8 @@ function SeedInfo({ seedDetailInfo }: ISeedInfoProps) {
       <div className="pb-4 -mt-4 overflow-hidden">
         <span className="flex flex-wrap items-start justify-between -mt-px">
           {renderPriceInfo(seedDetailInfo)}
-          {renderExpireWarningInfo(seedDetailInfo)}
+
+          {seedType !== SEED_TYPE.UNIQUE && renderExpireWarningInfo(seedDetailInfo)}
           {renderCreatingTip(seedDetailInfo)}
         </span>
       </div>

@@ -60,6 +60,10 @@ export const getFilterList = (isMobile: boolean, ChainId: string) => {
           label: 'Available',
           value: SEED_STATUS.UNREGISTERED,
         },
+        {
+          label: 'Expired',
+          value: SEED_STATUS.EXPIRED,
+        },
       ],
     },
     {

@@ -84,3 +84,7 @@ export const fetchSaveTokenInfos = async (data: ISaveTokenInfosParams): Promise<
 export const getUsersAddress = async (params: IUsersAddressReq): Promise<IUsersAddressRes> => {
   return request.get<IUsersAddressRes>('app/users/by-address', { params });
 };
+
+export const getSeedRenew = async (params: any): Promise<any> => {
+  return request.post('api/app/seed/seed-renew', { params });
+};
