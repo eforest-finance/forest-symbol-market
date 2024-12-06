@@ -70,15 +70,17 @@ export default function getColumns({
                   }}>
                   Create {text === 'FT' ? 'Token' : text}
                 </Button>
-                <Button
-                  className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
-                  type="primary"
-                  onClick={(e) => {
-                    onRenewal(record);
-                    e.stopPropagation();
-                  }}>
-                  Renewal
-                </Button>
+                {record.expireTime > new Date().getTime() && (
+                  <Button
+                    className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
+                    type="primary"
+                    onClick={(e) => {
+                      onRenewal(record);
+                      e.stopPropagation();
+                    }}>
+                    Renewal
+                  </Button>
+                )}
               </div>
             ),
         },
@@ -154,15 +156,17 @@ export default function getColumns({
                   }}>
                   Create {text === 'FT' ? 'Token' : text}
                 </Button>
-                <Button
-                  className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
-                  type="primary"
-                  onClick={(e) => {
-                    onRenewal(record);
-                    e.stopPropagation();
-                  }}>
-                  Renewal
-                </Button>
+                {record.expireTime > new Date().getTime() && (
+                  <Button
+                    className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
+                    type="primary"
+                    onClick={(e) => {
+                      onRenewal(record);
+                      e.stopPropagation();
+                    }}>
+                    Renewal
+                  </Button>
+                )}
               </div>
             ),
         },

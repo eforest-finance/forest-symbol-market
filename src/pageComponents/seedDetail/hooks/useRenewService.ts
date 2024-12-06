@@ -55,9 +55,6 @@ export function useRenewService() {
         );
         console.log('token approve finish', approveRes);
       }
-
-      // eslint-disable-next-line no-debugger
-      debugger;
       if (seedType == 3) {
         const { data } = await getSeedRenew({
           BuyerAddress: walletInfo.aelfChainAddress || address,
