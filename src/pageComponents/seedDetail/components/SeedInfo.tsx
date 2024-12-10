@@ -2,7 +2,7 @@ import { Statistic } from 'antd';
 import { OperateBtn } from './OperateBtn';
 import { ReactComponent as ClockSvg } from 'assets/images/clock.svg';
 import styles from './comp.module.css';
-import { SEED_TYPE, SEED_STATUS } from 'constants/seedDtail';
+import { SEED_TYPE, SEED_STATUS, NOT_SUPPORT_SEED_STATUS } from 'constants/seedDtail';
 import moment from 'moment';
 import { fixedPrice } from 'utils/calculate';
 
@@ -124,9 +124,9 @@ function renderCreatingTip(seedDetailInfo: ISeedDetailInfo) {
 }
 
 function SeedInfo({ seedDetailInfo }: ISeedInfoProps) {
-  const { seedType, status, auctionEndTime } = seedDetailInfo || {};
+  const { seedType, status, auctionEndTime, topBidPrice } = seedDetailInfo || {};
 
-  if (status === SEED_STATUS.NOT_SUPPORT || status === SEED_STATUS.REGISTERED) {
+  if (status === NOT_SUPPORT_SEED_STATUS.NOT_SUPPORT || status === SEED_STATUS.REGISTERED) {
     return null;
   }
   const now = new Date().getTime();
@@ -139,7 +139,7 @@ function SeedInfo({ seedDetailInfo }: ISeedInfoProps) {
         <span className="flex flex-wrap items-start justify-between -mt-px">
           {renderPriceInfo(seedDetailInfo)}
 
-          {renderExpireWarningInfo(seedDetailInfo)}
+          {!topBidPrice && renderExpireWarningInfo(seedDetailInfo)}
           {renderCreatingTip(seedDetailInfo)}
         </span>
       </div>

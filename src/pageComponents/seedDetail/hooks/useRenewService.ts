@@ -20,7 +20,7 @@ export function useRenewService() {
   const walletInfo = useSelector((store) => store.userInfo.walletInfo);
   const Renew = useCallback(
     async (seedDetailInfo: ISeedDetailInfo, address: string) => {
-      const { symbol, tokenPrice, seedType } = seedDetailInfo;
+      const { symbol, tokenPrice, seedType, topBidPrice } = seedDetailInfo;
       const info = store.getState().elfInfo.elfInfo;
 
       const allowance = await GetAllowanceByContract(
@@ -39,7 +39,7 @@ export function useRenewService() {
         message.error(allowance.errorMessage?.message || 'unknown error');
       }
 
-      const bigA = timesDecimals(tokenPrice?.amount || 0, 8);
+      const bigA = timesDecimals(seedType == 3 ? topBidPrice?.amount : tokenPrice?.amount || 0, 8);
       const allowanceBN = new BigNumber(allowance?.data.allowance);
       console.log(bigA, 'bigA');
       if (allowanceBN.lt(bigA)) {
@@ -47,7 +47,7 @@ export function useRenewService() {
           {
             spender: info?.symbolRegisterMainAddress,
             symbol: tokenPrice?.symbol || 'ELF',
-            amount: Number(timesDecimals(tokenPrice?.amount || 0, 8)),
+            amount: Number(timesDecimals(seedType == 3 ? topBidPrice?.amount : tokenPrice?.amount || 0, 8)),
           },
           {
             chain: SupportedELFChainId.MAIN_NET,
@@ -56,11 +56,19 @@ export function useRenewService() {
         console.log('token approve finish', approveRes);
       }
       if (seedType == 3) {
-        const { data } = await getSeedRenew({
+        const data = await getSeedRenew({
           BuyerAddress: walletInfo.aelfChainAddress || address,
           SeedSymbol: seedDetailInfo.seedSymbol,
         });
-        const res = await SpecialSeedRenewContract(data);
+
+        const params = {
+          buyer: data.buyer,
+          seedSymbol: data.seedSymbol,
+          price: { priceAmount: data.priceAmount, priceSymbol: data.priceSymbol },
+          opTime: data.opTime,
+          requestHash: data.requestHash,
+        };
+        const res = await SpecialSeedRenewContract(params);
         return res;
       }
 

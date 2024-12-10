@@ -67,7 +67,7 @@ export const RenewalModal = NiceModal.create(({ seedDetailInfo: detailInfo, main
     const usdPrice = fixedPrice(Number(usdPriceBase?.amount || 0), 2);
     const tokenPriceTotal = fixedPrice(
       seedType == 3
-        ? Number(topBidPrice?.amount || 0)
+        ? Number(topBidPrice?.amount || 0) + transactionFee.tokenPrice
         : Number(tokenPriceBase?.amount || 0) + transactionFee.tokenPrice,
     );
     const usdPriceTotal = fixedPrice(Number(usdPrice + transactionFee.usdPrice), 2);
