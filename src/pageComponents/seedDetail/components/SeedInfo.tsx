@@ -139,7 +139,7 @@ function SeedInfo({ seedDetailInfo }: ISeedInfoProps) {
         <span className="flex flex-wrap items-start justify-between -mt-px">
           {renderPriceInfo(seedDetailInfo)}
 
-          {!topBidPrice && renderExpireWarningInfo(seedDetailInfo)}
+          {renderExpireWarningInfo(seedDetailInfo)}
           {renderCreatingTip(seedDetailInfo)}
         </span>
       </div>
