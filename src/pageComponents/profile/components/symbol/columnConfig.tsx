@@ -62,25 +62,27 @@ export default function getColumns({
             ) : (
               <div className="flex flex-col gap-2">
                 {record.expireTime > new Date().getTime() && (
-                  <Button
-                    className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
-                    type="primary"
-                    onClick={(e) => {
-                      create(record);
-                      e.stopPropagation();
-                    }}>
-                    Create {text === 'FT' ? 'Token' : text}
-                  </Button>
+                  <>
+                    <Button
+                      className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
+                      type="primary"
+                      onClick={(e) => {
+                        create(record);
+                        e.stopPropagation();
+                      }}>
+                      Create {text === 'FT' ? 'Token' : text}
+                    </Button>
+                    <Button
+                      className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
+                      type="primary"
+                      onClick={(e) => {
+                        onRenewal(record);
+                        e.stopPropagation();
+                      }}>
+                      Renewal
+                    </Button>
+                  </>
                 )}
-                <Button
-                  className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
-                  type="primary"
-                  onClick={(e) => {
-                    onRenewal(record);
-                    e.stopPropagation();
-                  }}>
-                  Renewal
-                </Button>
               </div>
             ),
         },
@@ -148,25 +150,27 @@ export default function getColumns({
             ) : (
               <div className="flex flex-col lg:flex-row items-center gap-2">
                 {record.expireTime > new Date().getTime() && (
-                  <Button
-                    className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
-                    type="primary"
-                    onClick={(e) => {
-                      create(record);
-                      e.stopPropagation();
-                    }}>
-                    Create {text === 'FT' ? 'Token' : text}
-                  </Button>
+                  <>
+                    <Button
+                      className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
+                      type="primary"
+                      onClick={(e) => {
+                        create(record);
+                        e.stopPropagation();
+                      }}>
+                      Create {text === 'FT' ? 'Token' : text}
+                    </Button>
+                    <Button
+                      className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
+                      type="primary"
+                      onClick={(e) => {
+                        onRenewal(record);
+                        e.stopPropagation();
+                      }}>
+                      Renewal
+                    </Button>
+                  </>
                 )}
-                <Button
-                  className="w-[100px] h-8 flex items-center justify-center text-sm font-medium"
-                  type="primary"
-                  onClick={(e) => {
-                    onRenewal(record);
-                    e.stopPropagation();
-                  }}>
-                  Renewal
-                </Button>
               </div>
             ),
         },
