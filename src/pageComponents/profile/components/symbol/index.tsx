@@ -52,7 +52,7 @@ function Symbol() {
     [router, jumpModal],
   );
   const navigateToPage = (record: ISeedInfo) => {
-    router.push(`/${record.tokenType}/${record.symbol}`);
+    router.push(`/${record.tokenType}/${record.symbol}?search=1`);
   };
 
   const renewalModal = useModal(RenewalModal);

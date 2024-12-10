@@ -86,5 +86,5 @@ export const getUsersAddress = async (params: IUsersAddressReq): Promise<IUsersA
 };
 
 export const getSeedRenew = async (params: any): Promise<any> => {
-  return request.post('app/seed/seed-renew', { params });
+  return request.post('app/seed/seed-renew', params);
 };

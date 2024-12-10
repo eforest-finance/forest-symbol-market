@@ -58,7 +58,7 @@ export function useRenewService() {
       if (seedType == 3) {
         const { data } = await getSeedRenew({
           BuyerAddress: walletInfo.aelfChainAddress || address,
-          SeedSymbol: seedDetailInfo.symbol,
+          SeedSymbol: seedDetailInfo.seedSymbol,
         });
         const res = await SpecialSeedRenewContract(data);
         return res;

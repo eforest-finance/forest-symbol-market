@@ -129,9 +129,10 @@ function SeedInfo({ seedDetailInfo }: ISeedInfoProps) {
   if (status === SEED_STATUS.NOT_SUPPORT || status === SEED_STATUS.REGISTERED) {
     return null;
   }
+  const now = new Date().getTime();
   return (
     <div className="p-6 mt-6 text-white flex flex-col border-[#231F30] border border-solid rounded-lg">
-      {seedType === SEED_TYPE.UNIQUE && auctionEndTime * 1000 - Date.now() > 0 ? (
+      {seedType === SEED_TYPE.UNIQUE && auctionEndTime * 1000 - now > 0 ? (
         <Countdown deadline={auctionEndTime * 1000} />
       ) : null}
       <div className="pb-4 -mt-4 overflow-hidden">
@@ -142,7 +143,6 @@ function SeedInfo({ seedDetailInfo }: ISeedInfoProps) {
           {renderCreatingTip(seedDetailInfo)}
         </span>
       </div>
-
       <OperateBtn seedDetailInfo={seedDetailInfo} />
     </div>
   );

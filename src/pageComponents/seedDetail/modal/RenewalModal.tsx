@@ -22,6 +22,7 @@ import { useConnectWallet } from '@aelf-web-login/wallet-adapter-react';
 import symbol from 'pageComponents/profile/components/symbol';
 import { useGetSymbolService } from '../hooks/useGetSymbol';
 import { getSymbolInfo } from 'api/seedDetail';
+import { getSeedRenew } from 'api/request';
 
 interface IPayModalProps {
   seedDetailInfo?: ISeedDetailInfo;
@@ -61,14 +62,19 @@ export const RenewalModal = NiceModal.create(({ seedDetailInfo: detailInfo, main
   const { Renew } = useRenewService();
   const transactionFee = useTransactionFee();
 
+  const [amountSpecial, setAmountSpecial] = useState(0);
+
   const allPrice = useMemo(() => {
-    const { tokenPrice: tokenPriceBase, usdPrice: usdPriceBase } = seedDetailInfo || {};
-    const tokenPriceTotal = fixedPrice(Number((tokenPriceBase?.amount || 0) + transactionFee.tokenPrice));
-    const usdPriceTotal = fixedPrice(Number((usdPriceBase?.amount || 0) + transactionFee.usdPrice), 2);
+    const { tokenPrice: tokenPriceBase, usdPrice: usdPriceBase, topBidPrice, seedType } = seedDetailInfo || {};
+    console.log('topBidPrice', topBidPrice);
+    const usdPrice = fixedPrice(Number(usdPriceBase?.amount), 2);
+    const tokenPriceTotal = fixedPrice(
+      Number((seedType == 3 ? Number(topBidPrice?.amount) : tokenPriceBase?.amount || 0) + transactionFee.tokenPrice),
+    );
+    const usdPriceTotal = fixedPrice(Number(usdPrice + transactionFee.usdPrice), 2);
     const tokenPriceEst = fixedPrice(Number(transactionFee.tokenPrice));
     const usdPriceEst = fixedPrice(Number(transactionFee.usdPrice), 2);
-    const tokenPrice = fixedPrice(Number(tokenPriceBase?.amount || 0));
-    const usdPrice = fixedPrice(Number(usdPriceBase?.amount || 0), 2);
+    const tokenPrice = fixedPrice(Number(seedType == 3 ? Number(topBidPrice?.amount) : tokenPriceBase?.amount || 0));
     return {
       tokenPriceTotal,
       usdPriceTotal,
