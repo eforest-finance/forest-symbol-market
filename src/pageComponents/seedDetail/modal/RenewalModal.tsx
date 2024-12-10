@@ -66,15 +66,19 @@ export const RenewalModal = NiceModal.create(({ seedDetailInfo: detailInfo, main
 
   const allPrice = useMemo(() => {
     const { tokenPrice: tokenPriceBase, usdPrice: usdPriceBase, topBidPrice, seedType } = seedDetailInfo || {};
-    console.log('topBidPrice', topBidPrice);
-    const usdPrice = fixedPrice(Number(usdPriceBase?.amount), 2);
+    const usdPrice = fixedPrice(Number(usdPriceBase?.amount || 0), 2);
     const tokenPriceTotal = fixedPrice(
-      Number((seedType == 3 ? Number(topBidPrice?.amount) : tokenPriceBase?.amount || 0) + transactionFee.tokenPrice),
+      seedType == 3
+        ? Number(topBidPrice?.amount || 0)
+        : Number(tokenPriceBase?.amount || 0) + transactionFee.tokenPrice,
     );
     const usdPriceTotal = fixedPrice(Number(usdPrice + transactionFee.usdPrice), 2);
     const tokenPriceEst = fixedPrice(Number(transactionFee.tokenPrice));
     const usdPriceEst = fixedPrice(Number(transactionFee.usdPrice), 2);
-    const tokenPrice = fixedPrice(Number(seedType == 3 ? Number(topBidPrice?.amount) : tokenPriceBase?.amount || 0));
+    const tokenPrice = fixedPrice(
+      seedType == 3 ? Number(topBidPrice?.amount || 0) : Number(tokenPriceBase?.amount || 0),
+      2,
+    );
     return {
       tokenPriceTotal,
       usdPriceTotal,
