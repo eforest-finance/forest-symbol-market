@@ -62,8 +62,6 @@ export const RenewalModal = NiceModal.create(({ seedDetailInfo: detailInfo, main
   const { Renew } = useRenewService();
   const transactionFee = useTransactionFee();
 
-  const [amountSpecial, setAmountSpecial] = useState(0);
-
   const allPrice = useMemo(() => {
     const { tokenPrice: tokenPriceBase, usdPrice: usdPriceBase, topBidPrice, seedType } = seedDetailInfo || {};
     const usdPrice = fixedPrice(Number(usdPriceBase?.amount || 0), 2);
