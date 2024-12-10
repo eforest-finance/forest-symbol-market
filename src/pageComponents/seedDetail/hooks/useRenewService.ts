@@ -64,7 +64,7 @@ export function useRenewService() {
         const params = {
           buyer: data.buyer,
           seedSymbol: data.seedSymbol,
-          price: { priceAmount: data.priceAmount, priceSymbol: data.priceSymbol },
+          price: { amount: data.priceAmount, symbol: data.priceSymbol },
           opTime: data.opTime,
           requestHash: data.requestHash,
         };

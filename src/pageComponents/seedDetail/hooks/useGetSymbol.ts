@@ -30,7 +30,6 @@ export function useGetSymbolService() {
     if (
       res.seedType === SEED_TYPE.UNIQUE &&
       res.status === SEED_STATUS.UNREGISTERED &&
-      res.chainId === info.curChain &&
       (seedDetailInfo?.id !== res.id || (seedDetailInfo?.id === res.id && !seedDetailInfo.canBeBid))
     ) {
       // need auction info to get to the forest
