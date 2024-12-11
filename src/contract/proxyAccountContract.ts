@@ -1,9 +1,10 @@
-import { SupportedELFChainId, IContractOptions, ContractMethodType, ISendResult, IContractError } from 'types';
 import { store } from 'redux/store';
-import { formatErrorMsg } from './util';
-import { getTxResult } from 'utils/getTxResult';
+import { SupportedELFChainId, IContractOptions, ContractMethodType, ISendResult, IContractError } from 'types';
 import { sleep } from 'utils/common';
+import { getTxResult } from 'utils/getTxResult';
+
 import { GetContractServiceMethod } from './baseContract';
+import { formatErrorMsg } from './util';
 
 export const proxyContractRequest = async <T, R>(
   methodName: string,
@@ -34,6 +35,7 @@ export const proxyContractRequest = async <T, R>(
 
   try {
     const res: R = await CallContractMethod({
+      chainId: curChain,
       contractAddress,
       methodName,
       args: params,

@@ -1,19 +1,19 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
 import AElf from 'aelf-sdk';
-
-import { ApproveByContract, GetAllowanceByContract, CreateTokenByContract } from 'contract';
+import { message } from 'antd';
 import { fetchSyncToken, fetchSyncResult, fetchSaveTokenInfos, fetchSyncResultExists } from 'api/request';
+import { CreateTokenProgressModal } from 'components/CreateTokenProgressModal/index';
 import { SupportedELFChainId } from 'constants/chain';
 import { CHAIN_ID_VALUE } from 'constants/chain';
-import { store } from 'redux/store';
+import { ApproveByContract, GetAllowanceByContract, CreateTokenByContract } from 'contract';
 import { ForwardCallByContract, GetProxyAccountByContract } from 'contract';
 import tokenContractJson from 'proto/token_contract.json';
-import { encodedParams } from 'utils/aelfUtils';
-import { message } from 'antd';
-import { formatErrorMsg } from 'utils/formatErrorMsg';
-import { useModal } from '@ebay/nice-modal-react';
-import { CreateTokenProgressModal } from 'components/CreateTokenProgressModal/index';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { setCreateTokenProgress } from 'redux/reducer/info';
+import { store } from 'redux/store';
+import { encodedParams } from 'utils/aelfUtils';
+import { formatErrorMsg } from 'utils/formatErrorMsg';
+
+import { useModal } from '@ebay/nice-modal-react';
 
 export enum CreateByEnum {
   Collection = 'collection',
@@ -184,13 +184,13 @@ export function useCreateService() {
         },
       );
 
-      if (allowance.error) {
-        message.error(formatErrorMsg(allowance.errorMessage?.message || 'unknown error'));
+      if (allowance?.data.error) {
+        message.error(formatErrorMsg(allowance.data.errorMessage?.message || 'unknown error'));
         throw new Error('createContractByCollection fail');
       }
 
       let approveRes;
-      if (Number(allowance?.allowance) < 1) {
+      if (Number(allowance?.data.allowance) < 1) {
         approveRes = await ApproveByContract(
           {
             spender: info?.tokenAdapterMainAddress,
@@ -268,7 +268,6 @@ export function useCreateService() {
 
   const create = async (params: ICreateTokenParams, tokenLogoImage: string): Promise<Boolean | FailStepEnum> => {
     const info = store.getState().elfInfo.elfInfo;
-
     const result = await createContract({
       ...params,
       externalInfo: {
@@ -315,7 +314,6 @@ export function useCreateService() {
         error: false,
       }),
     );
-
     if (params.issueChain !== SupportedELFChainId.MAIN_NET) {
       // wait for confirm
       const requestParams = {
@@ -358,15 +356,15 @@ export function useCreateService() {
     try {
       const info = store.getState().elfInfo.elfInfo;
 
-      const { proxyAccountHash } = await GetProxyAccountByContract(proxyIssuerAddress, chain);
-      console.log(proxyAccountHash, 'proxyAccountHash');
+      const hash = await GetProxyAccountByContract(proxyIssuerAddress, chain);
+
       const issueInputMessage = getProtoObject().lookupType('IssueInput');
 
       const issueArgs = await encodedParams(issueInputMessage.resolveAll(), params);
       console.log(issueArgs, issueInputMessage.decode(issueArgs));
       const issRes = await ForwardCallByContract(
         {
-          proxyAccountHash,
+          proxyAccountHash: hash.data.proxyAccountHash,
           contractAddress:
             chain === SupportedELFChainId.MAIN_NET
               ? (info.mainChainAddress as string)

@@ -13,6 +13,11 @@ import { useSelector } from 'react-redux';
 import { JumpForestModal } from 'pageComponents/seedDetail/modal/JumpForestModal';
 import { useModal } from '@ebay/nice-modal-react';
 import { addPrefixSuffix } from 'utils/addressFormatting';
+import { PaymentSuccessModal, RenewalModal } from 'pageComponents/seedDetail/modal';
+import { useConnectWallet } from '@aelf-web-login/wallet-adapter-react';
+import { useWalletSyncCompleted } from 'hooks/useWallet';
+import { message } from 'antd';
+import { cloneDeep } from 'lodash-es';
 
 interface IFilter {
   [FilterTypeEnum.Type]: {
@@ -27,6 +32,9 @@ interface IFilter {
 }
 function Symbol() {
   const { isMobile } = useResponsive();
+  const { isConnected, connectWallet } = useConnectWallet();
+  const { getAccountInfoSync } = useWalletSyncCompleted();
+
   const router = useRouter();
   const jumpModal = useModal(JumpForestModal);
   const create = useCallback(
@@ -44,9 +52,30 @@ function Symbol() {
     [router, jumpModal],
   );
   const navigateToPage = (record: ISeedInfo) => {
-    router.push(`/${record.tokenType}/${record.symbol}`);
+    router.push(`/${record.tokenType}/${record.symbol}${record.tokenType !== 'NFT' ? '?search=1' : ''}`);
   };
-  const columns: ColumnsType<ISeedInfo> = getColumns({ isMobile, create, navigateToPage });
+
+  const renewalModal = useModal(RenewalModal);
+  const paySucModal = useModal(PaymentSuccessModal);
+
+  const onRenewal = async (seedDetailInfo: any) => {
+    if (!isConnected) {
+      connectWallet();
+      return;
+    }
+
+    if (seedDetailInfo.chainId !== 'AELF')
+      return message.warning(
+        'The current seed is on the dAppChain and cannot be renewed. Please use the Portkey wallet to transfer the seed back to the MainChain.',
+      );
+
+    const res = await renewalModal.show({ seedDetailInfo, mainAddress });
+    if (res) {
+      message.success('Renewal successful');
+    }
+  };
+
+  const columns: ColumnsType<ISeedInfo> = getColumns({ isMobile, create, onRenewal, navigateToPage });
   const [filterSelect, setFilterSelect] = useState<IFilter>({
     [FilterTypeEnum.Type]: {
       value: -1,

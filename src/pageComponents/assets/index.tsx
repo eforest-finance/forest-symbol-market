@@ -2,37 +2,49 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { WalletType, useWebLogin, useComponentFlex } from 'aelf-web-login';
+import { PortkeyAssetProvider, Asset, did } from '@portkey/did-ui-react';
 import { LeftOutlined } from '@ant-design/icons';
 
 import styles from './style.module.css';
 import { useWalletService } from 'hooks/useWallet';
 import { useSelector } from 'redux/store';
+import { TSignatureParams, WalletTypeEnum, LoginStatusEnum } from '@aelf-web-login/wallet-adapter-base';
+import { useConnectWallet } from '@aelf-web-login/wallet-adapter-react';
 
 export default function MyAsset() {
   const router = useRouter();
-  const { wallet, walletType, login } = useWebLogin();
-  const { isLogin } = useWalletService();
+  // const { wallet, walletType, login } = useWebLogin();
+  const {
+    walletInfo: wallet,
+    walletType,
+    disConnectWallet,
+    getSignature,
+    isConnected,
+    connectWallet,
+  } = useConnectWallet();
 
   const info = useSelector((store) => store.elfInfo.elfInfo);
 
   const { isShowRampBuy, isShowRampSell } = info;
 
-  const { PortkeyAssetProvider, Asset } = useComponentFlex();
+  // const { PortkeyAssetProvider, Asset } = useComponentFlex();
 
   useEffect(() => {
-    if (!isLogin) {
-      login();
-    } else if (walletType !== WalletType.portkey) {
+    if (!isConnected) {
+      connectWallet();
+    } else if (walletType !== WalletTypeEnum.aa) {
       router.push('/');
     }
-  }, [isLogin, router, walletType]);
+  }, [isConnected, router, walletType]);
+
+  const isLoginOnChain = did.didWallet.isLoginStatus === LoginStatusEnum.SUCCESS;
 
   return (
     <div className={styles.asset}>
       <PortkeyAssetProvider
-        originChainId={wallet?.portkeyInfo?.chainId as Chain}
-        pin={wallet?.portkeyInfo?.pin}
+        originChainId={wallet?.extraInfo?.portkeyInfo?.chainId as Chain}
+        pin={wallet?.extraInfo?.portkeyInfo?.pin}
+        isLoginOnChain={isLoginOnChain}
         // caHash={wallet?.portkeyInfo?.caInfo?.caHash}
         // didStorageKeyName={'TSM'}
       >

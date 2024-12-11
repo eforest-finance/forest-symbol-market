@@ -92,7 +92,11 @@ interface ISeedDetailInfo {
   expireTime: number;
   auctionEndTime: number;
   notSupportSeedStatus: number;
-  tokenPrice?: {
+  topBidPrice?: {
+    symbol: string;
+    amount: number;
+  };
+  tokenPrice: {
     symbol: string;
     amount: number;
   };

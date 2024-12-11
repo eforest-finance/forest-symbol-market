@@ -6,29 +6,47 @@ import { useSelector, store } from 'redux/store';
 
 import { ReactComponent as UnionSvg } from 'assets/images/Union.svg';
 import { useEffect, useMemo, useState } from 'react';
-import { useBuySymbolService } from '../hooks/useBuyService';
+import { useRenewService } from '../hooks/useRenewService';
 import { SyncOutlined } from '@ant-design/icons';
 import SeedImage from 'components/SeedImage';
 import TipsModal from 'pageComponents/profile/components/TipsModal';
-import { useTransactionFee } from '../hooks/useBuyService';
+import { useTransactionFee } from '../hooks/useRenewService';
 import LoadingModal from 'components/LoadingModal';
-import { debounce } from 'lodash-es';
+import { cloneDeep, debounce } from 'lodash-es';
 import { fixedPrice } from 'utils/calculate';
 import { TransactionFailedModal } from './TransactionFailedModal';
 import { ReactComponent as ErrorIcon } from 'assets/images/error-icon.svg';
 import styles from './style.module.css';
 import { formatErrorMsg } from 'utils/formatErrorMsg';
 import { useConnectWallet } from '@aelf-web-login/wallet-adapter-react';
+import symbol from 'pageComponents/profile/components/symbol';
+import { useGetSymbolService } from '../hooks/useGetSymbol';
+import { getSymbolInfo } from 'api/seedDetail';
+import { getSeedRenew } from 'api/request';
+import moment from 'moment';
 
 interface IPayModalProps {
   seedDetailInfo?: ISeedDetailInfo;
   mainAddress: string;
 }
 
-export const ConfirmPayModal = NiceModal.create(({ mainAddress }: IPayModalProps) => {
+export const RenewalModal = NiceModal.create(({ seedDetailInfo: detailInfo, mainAddress }: IPayModalProps) => {
   const info = store.getState().elfInfo.elfInfo;
 
-  const { seedInfo: seedDetailInfo } = useSelector((store) => store.seedInfo);
+  const [seedDetailInfo, setSeedDetailInfo] = useState<ISeedDetailInfo>();
+
+  const getSeedDetailInfo = async () => {
+    const res: ISeedDetailInfo = await getSymbolInfo({
+      symbol: String(detailInfo?.symbol).toUpperCase(),
+      tokenType: String(detailInfo?.tokenType).toUpperCase(),
+    });
+    setSeedDetailInfo(res);
+  };
+
+  useEffect(() => {
+    getSeedDetailInfo();
+  }, [detailInfo]);
+
   const modal = useModal();
   const tipModal = useModal(TipsModal);
   const transactionFailedModal = useModal(TransactionFailedModal);
@@ -42,17 +60,24 @@ export const ConfirmPayModal = NiceModal.create(({ mainAddress }: IPayModalProps
   //   usdPrice: 0.03,
   // });
 
-  const { BuySymbol } = useBuySymbolService();
+  const { Renew } = useRenewService();
   const transactionFee = useTransactionFee();
 
   const allPrice = useMemo(() => {
-    const { tokenPrice: tokenPriceBase, usdPrice: usdPriceBase } = seedDetailInfo || {};
-    const tokenPriceTotal = fixedPrice(Number((tokenPriceBase?.amount || 0) + transactionFee.tokenPrice));
-    const usdPriceTotal = fixedPrice(Number((usdPriceBase?.amount || 0) + transactionFee.usdPrice), 2);
+    const { tokenPrice: tokenPriceBase, usdPrice: usdPriceBase, topBidPrice, seedType } = seedDetailInfo || {};
+    const usdPrice = fixedPrice(Number(usdPriceBase?.amount || 0), 2);
+    const tokenPriceTotal = fixedPrice(
+      seedType == 3
+        ? Number(topBidPrice?.amount || 0) + transactionFee.tokenPrice
+        : Number(tokenPriceBase?.amount || 0) + transactionFee.tokenPrice,
+    );
+    const usdPriceTotal = fixedPrice(Number(usdPrice + transactionFee.usdPrice), 2);
     const tokenPriceEst = fixedPrice(Number(transactionFee.tokenPrice));
     const usdPriceEst = fixedPrice(Number(transactionFee.usdPrice), 2);
-    const tokenPrice = fixedPrice(Number(tokenPriceBase?.amount || 0));
-    const usdPrice = fixedPrice(Number(usdPriceBase?.amount || 0), 2);
+    const tokenPrice = fixedPrice(
+      seedType == 3 ? Number(topBidPrice?.amount || 0) : Number(tokenPriceBase?.amount || 0),
+      2,
+    );
     return {
       tokenPriceTotal,
       usdPriceTotal,
@@ -63,46 +88,8 @@ export const ConfirmPayModal = NiceModal.create(({ mainAddress }: IPayModalProps
     };
   }, [seedDetailInfo, transactionFee]);
 
-  const onBuy = async () => {
+  const onRenewal = async () => {
     if (!seedDetailInfo?.symbol) return;
-
-    const allowance = await GetAllowanceByContract(
-      {
-        spender: info?.symbolRegisterMainAddress || '',
-        symbol: 'ELF',
-        owner: walletInfo.address || '',
-      },
-      {
-        chain: 'AELF',
-      },
-    );
-
-    if (allowance?.data.error) {
-      message.error(formatErrorMsg(allowance.errorMessage?.message || 'unknown error'));
-      throw new Error('createContractByCollection fail');
-    }
-
-    let approveRes;
-    if (Number(allowance?.data.allowance) < allPrice?.tokenPriceTotal * 10 ** 8) {
-      try {
-        approveRes = await ApproveByContract(
-          {
-            spender: info?.symbolRegisterMainAddress,
-            symbol: 'ELF',
-            amount: allPrice?.tokenPriceTotal * 10 ** 8,
-          },
-          {
-            chain: 'AELF',
-          },
-        );
-
-        console.log('approveRes', approveRes);
-      } catch (error) {
-        const resError = error as IContractError;
-        message.error(resError.errorMessage?.message);
-        return;
-      }
-    }
 
     // if (Number(balance) <= Number(allPrice.tokenPriceTotal)) {
     //   tipModal.show({
@@ -111,9 +98,9 @@ export const ConfirmPayModal = NiceModal.create(({ mainAddress }: IPayModalProps
     //   return;
     // }
     loadingModal.show();
-    BuySymbol(seedDetailInfo?.symbol, seedDetailInfo?.tokenPrice || { symbol: 'ELF', amount: 1 }, mainAddress)
-      .then((res: any) => {
-        console.log('BuySymbol res', res);
+
+    Renew(seedDetailInfo, mainAddress)
+      .then(() => {
         setTimeout(() => {
           modal.resolve({
             status: 'ok',
@@ -123,7 +110,6 @@ export const ConfirmPayModal = NiceModal.create(({ mainAddress }: IPayModalProps
         }, 5000);
       })
       .catch((error) => {
-        console.error('BuySymbol error', error);
         // message.error(formatErrorMsg(error?.errorMessage?.message));
         transactionFailedModal.show({
           errorMsg: formatErrorMsg(error?.errorMessage?.message),
@@ -173,11 +159,13 @@ export const ConfirmPayModal = NiceModal.create(({ mainAddress }: IPayModalProps
         className="!h-[52px]"
         type="primary"
         disabled={disabled}
-        onClick={debounce(onBuy, 1000, { leading: true, trailing: false })}>
-        Buy
+        onClick={debounce(onRenewal, 1000, { leading: true, trailing: false })}>
+        Renewal
       </Button>
     </div>
   );
+
+  const date = moment(Number(seedDetailInfo?.expireTime) * 1000).utc();
   return (
     <BaseModal
       width={680}
@@ -189,12 +177,23 @@ export const ConfirmPayModal = NiceModal.create(({ mainAddress }: IPayModalProps
       centered
       footer={footer}
       maskClosable
-      title="Confirm Payment">
-      <div className="flex flex-row my-[32px] items-center font-medium">
-        {seedDetailInfo && <SeedImage className="shrink-0" seedInfo={seedDetailInfo} />}
-        <div className="ml-[16px] text-[14px]">
-          <span className="text-primary-color">SEED-</span>
-          <span className="text-white break-all">{seedDetailInfo?.symbol || ''}</span>
+      title="Confirm Renewal">
+      <div className="flex flex-col items-start lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-row lg:my-[32px] items-center font-medium">
+          {seedDetailInfo && <SeedImage className="shrink-0" seedInfo={seedDetailInfo} />}
+          <div className="ml-[16px] text-[14px]">
+            <span className="text-primary-color">SEED-</span>
+            <span className="text-white break-all">{seedDetailInfo?.symbol || ''}</span>
+          </div>
+        </div>
+        <div>
+          <div className={styles['seed-info-right']}>
+            <div className="text-sm text-[#796F94] lg:text-right">Expiration date after renewal</div>
+            <div>
+              <span className="text-base font-bold mt-2 mr-1">{date.format('ll')}</span>
+              <span className="text-base font-bold mt-1">{date.format('HH:mm:ss [UTC]')}</span>
+            </div>
+          </div>
         </div>
       </div>
       <div className="flex rounded-md justify-between items-center p-4 bg-[#100D1B] border border-solid border-[#231F30] text-[16px] font-medium text-white">

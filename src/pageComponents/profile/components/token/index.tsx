@@ -14,10 +14,10 @@ import { useWalletSyncCompleted } from 'hooks/useWallet';
 
 import { useUnmount } from 'react-use';
 import { addPrefixSuffix } from 'utils/addressFormatting';
-import { WebLoginState, useWebLogin } from 'aelf-web-login';
 import { SupportedELFChainId } from 'types';
 import { explorerURL } from 'utils/getExplorerUrl';
 import { chain } from 'lodash-es';
+import { useConnectWallet } from '@aelf-web-login/wallet-adapter-react';
 
 export default function Token() {
   const TokeModal = useModal(IssueTokenModal);
@@ -110,17 +110,13 @@ export default function Token() {
     await issueTokenMethod(record);
   };
   const showModal = useRef<boolean>(false);
-  const { loginState } = useWebLogin();
+  // const { loginState } = useWebLogin();
+  const { walletType, disConnectWallet, getSignature, isConnected } = useConnectWallet();
+
   useEffect(() => {
     const data = tableProps.dataSource;
     const localSymbol = localStorage.getItem('issueToken');
-    if (
-      tableProps.dataSource.length &&
-      symbol &&
-      !showModal.current &&
-      localSymbol &&
-      loginState === WebLoginState.logined
-    ) {
+    if (tableProps.dataSource.length && symbol && !showModal.current && localSymbol && isConnected) {
       const info = data.find((item: IMyTokenInfo) => item.symbol === symbol);
       if (info && info.tokenAction === 'Issue') {
         issueToken(info);

@@ -1,8 +1,10 @@
+import { IContractOptions, ContractMethodType, SupportedELFChainId, IContractError } from 'types';
+
 import { multiTokenContractRequest } from './multiTokenContract';
-import { tokenAdapterContractRequest } from './tokenAdapterContract';
 import { proxyContractRequest } from './proxyAccountContract';
 import { symbolRegisterContractRequest } from './symbolRegisterContrack';
-import { IContractOptions, ContractMethodType, SupportedELFChainId, IContractError } from 'types';
+import { tokenAdapterContractRequest } from './tokenAdapterContract';
+
 export interface IGetBalanceParams {
   symbol: string;
   owner: string;
@@ -11,11 +13,11 @@ export interface IGetBalanceParams {
 export const GetBalanceByContract = async (
   params: IGetBalanceParams,
   options?: IContractOptions,
-): Promise<{ balance: number }> => {
+): Promise<{ data: { balance: string } }> => {
   const res = (await multiTokenContractRequest('GetBalance', params, {
     ...options,
     type: ContractMethodType.VIEW,
-  })) as { balance: number };
+  })) as { data: { balance: string } };
   return res;
 };
 
@@ -38,14 +40,11 @@ export const CreateTokenByContract = async (params: ICreateTokenParams): Promise
   return res;
 };
 
-export const GetAllowanceByContract = async (
-  params: IGetAllowanceParams,
-  options?: IContractOptions,
-): Promise<IGetAllowanceResponse & IContractError> => {
-  const res = (await multiTokenContractRequest('GetAllowance', params, {
+export const GetAllowanceByContract = async (params: IGetAllowanceParams, options?: IContractOptions): Promise<any> => {
+  const res = await multiTokenContractRequest('GetAllowance', params, {
     ...options,
     type: ContractMethodType.VIEW,
-  })) as IGetAllowanceResponse & IContractError;
+  });
   return res;
 };
 
@@ -56,19 +55,12 @@ export const ForwardCallByContract = async (params: IForwardCallParams, chain?: 
   return res;
 };
 
-export const GetProxyAccountByContract = async (
-  address: string,
-  chain?: Chain,
-): Promise<IGetProxyAccountByProxyAccountAddressRes> => {
-  const res: IGetProxyAccountByProxyAccountAddressRes | ISendResult = await proxyContractRequest(
-    'GetProxyAccountByProxyAccountAddress',
-    address,
-    {
-      chain,
-      type: ContractMethodType.VIEW,
-    },
-  );
-  return res as IGetProxyAccountByProxyAccountAddressRes;
+export const GetProxyAccountByContract = async (address: string, chain?: Chain): Promise<any> => {
+  const res = await proxyContractRequest('GetProxyAccountByProxyAccountAddress', address, {
+    chain,
+    type: ContractMethodType.VIEW,
+  });
+  return res;
 };
 
 export const BuyByContract = async ({ symbol, issuer }: IBuyParams) => {
@@ -76,5 +68,15 @@ export const BuyByContract = async ({ symbol, issuer }: IBuyParams) => {
     symbol,
     issueTo: issuer,
   });
+  return res;
+};
+
+export const RegularSeedRenewContract = async (params: any) => {
+  const res = await symbolRegisterContractRequest('RegularSeedRenew', params);
+  return res;
+};
+
+export const SpecialSeedRenewContract = async (params: any) => {
+  const res = await symbolRegisterContractRequest('SpecialSeedRenew', params);
   return res;
 };

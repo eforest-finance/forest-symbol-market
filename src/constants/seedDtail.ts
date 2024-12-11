@@ -10,7 +10,7 @@ export enum SEED_STATUS {
   AVAILABLE = 0,
   UNREGISTERED = 1,
   REGISTERED = 2,
-  NOT_SUPPORT = 3,
+  EXPIRED = 3,
 }
 
 export enum NOT_SUPPORT_SEED_STATUS {

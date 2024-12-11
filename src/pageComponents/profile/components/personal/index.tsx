@@ -7,7 +7,8 @@ import useUserInfo from 'hooks/useUserInfo';
 import { logOutUserInfo } from 'redux/reducer/userInfo';
 import { useSelector } from 'react-redux';
 import { addPrefixSuffix } from 'utils/addressFormatting';
-import { useGetAccount } from 'aelf-web-login';
+import { useConnectWallet } from '@aelf-web-login/wallet-adapter-react';
+
 import { useRequest } from 'ahooks';
 import { SupportedELFChainId } from 'types';
 import { Popover, Space } from 'antd';
@@ -65,11 +66,19 @@ function ELFAddress({
 }
 
 function Personal() {
-  const getAccountInAELF = useGetAccount('AELF');
-  const { run, data, cancel } = useRequest(getAccountInAELF, {
-    manual: true,
-    pollingInterval: 3000,
-  });
+  const { getAccountByChainId } = useConnectWallet();
+
+  const getAccountInAELF = getAccountByChainId('AELF');
+
+  const { run, data, cancel } = useRequest(
+    () => {
+      return getAccountInAELF;
+    },
+    {
+      manual: true,
+      pollingInterval: 3000,
+    },
+  );
   const { getUserInfo } = useUserInfo();
   const [userInfo, setUserInfo] = useState<UserInfoType | IUsersAddressRes>(logOutUserInfo);
   const [openAddress, setOpenAddress] = useState<boolean>(false);

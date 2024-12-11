@@ -2,7 +2,7 @@ import { Statistic } from 'antd';
 import { OperateBtn } from './OperateBtn';
 import { ReactComponent as ClockSvg } from 'assets/images/clock.svg';
 import styles from './comp.module.css';
-import { SEED_TYPE, SEED_STATUS } from 'constants/seedDtail';
+import { SEED_TYPE, SEED_STATUS, NOT_SUPPORT_SEED_STATUS } from 'constants/seedDtail';
 import moment from 'moment';
 import { fixedPrice } from 'utils/calculate';
 
@@ -70,13 +70,22 @@ function getSeedTitle(seedDetailInfo: ISeedDetailInfo) {
 // }
 
 function renderExpireWarningInfo(seedDetailInfo: ISeedDetailInfo) {
-  const { seedType, status, expireTime } = seedDetailInfo || {};
+  const { expireTime, auctionEndTime, canBeBid } = seedDetailInfo || {};
   if (!expireTime) {
     return (
       <span className={styles['seed-info-right']}>
         <span className="text-white text-sm">The SEED is due to expire in one year upon creation.</span>
       </span>
     );
+  }
+
+  if (canBeBid) {
+    if (auctionEndTime * 1000 - Date.now() > 0) {
+      return;
+    }
+    if (auctionEndTime == 0) {
+      return;
+    }
   }
   const date = moment(expireTime * 1000).utc();
   return (
@@ -126,22 +135,23 @@ function renderCreatingTip(seedDetailInfo: ISeedDetailInfo) {
 function SeedInfo({ seedDetailInfo }: ISeedInfoProps) {
   const { seedType, status, auctionEndTime } = seedDetailInfo || {};
 
-  if (status === SEED_STATUS.NOT_SUPPORT || status === SEED_STATUS.REGISTERED) {
+  if (status === NOT_SUPPORT_SEED_STATUS.NOT_SUPPORT || status === SEED_STATUS.REGISTERED) {
     return null;
   }
+  const now = new Date().getTime();
   return (
     <div className="p-6 mt-6 text-white flex flex-col border-[#231F30] border border-solid rounded-lg">
-      {seedType === SEED_TYPE.UNIQUE && auctionEndTime * 1000 - Date.now() > 0 ? (
+      {seedType === SEED_TYPE.UNIQUE && auctionEndTime * 1000 - now > 0 ? (
         <Countdown deadline={auctionEndTime * 1000} />
       ) : null}
       <div className="pb-4 -mt-4 overflow-hidden">
         <span className="flex flex-wrap items-start justify-between -mt-px">
           {renderPriceInfo(seedDetailInfo)}
+
           {renderExpireWarningInfo(seedDetailInfo)}
           {renderCreatingTip(seedDetailInfo)}
         </span>
       </div>
-
       <OperateBtn seedDetailInfo={seedDetailInfo} />
     </div>
   );

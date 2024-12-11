@@ -1,7 +1,4 @@
 import { SEED_STATUS } from 'constants/seedDtail';
-import { SupportedELFChainId } from 'types';
-import { getChainPrefix } from 'utils/common';
-import { ChainId } from '@portkey/types';
 
 export enum SeedStatusEnum {
   Used = SEED_STATUS.REGISTERED,
@@ -62,6 +59,10 @@ export const getFilterList = (isMobile: boolean, ChainId: string) => {
         {
           label: 'Available',
           value: SEED_STATUS.UNREGISTERED,
+        },
+        {
+          label: 'Expired',
+          value: SEED_STATUS.EXPIRED,
         },
       ],
     },

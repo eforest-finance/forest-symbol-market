@@ -93,7 +93,7 @@ function getStatusTileOrDesc(seedDetailInfo: ISeedDetailInfo) {
     return res;
   }
 
-  if (status === SEED_STATUS.NOT_SUPPORT) {
+  if (status === NOT_SUPPORT_SEED_STATUS.NOT_SUPPORT) {
     res.statusTitle = 'Not Supported';
     res.statusTagTypeStr = 'error';
 
