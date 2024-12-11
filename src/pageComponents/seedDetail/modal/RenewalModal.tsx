@@ -178,8 +178,8 @@ export const RenewalModal = NiceModal.create(({ seedDetailInfo: detailInfo, main
       footer={footer}
       maskClosable
       title="Confirm Renewal">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-row my-[32px] items-center font-medium">
+      <div className="flex flex-col items-start lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-row lg:my-[32px] items-center font-medium">
           {seedDetailInfo && <SeedImage className="shrink-0" seedInfo={seedDetailInfo} />}
           <div className="ml-[16px] text-[14px]">
             <span className="text-primary-color">SEED-</span>
@@ -188,7 +188,7 @@ export const RenewalModal = NiceModal.create(({ seedDetailInfo: detailInfo, main
         </div>
         <div>
           <div className={styles['seed-info-right']}>
-            <div className="text-sm text-[#796F94]">Expiration date after renewal</div>
+            <div className="text-sm text-[#796F94] lg:text-right">Expiration date after renewal</div>
             <div>
               <span className="text-base font-bold mt-2 mr-1">{date.format('ll')}</span>
               <span className="text-base font-bold mt-1">{date.format('HH:mm:ss [UTC]')}</span>

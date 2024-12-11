@@ -5,5 +5,5 @@
 }
 
 .seed-info-right {
-  @apply flex flex-col py-4 text-white text-right;
+  @apply flex flex-col py-4 text-white;
 }
