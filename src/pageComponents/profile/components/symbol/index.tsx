@@ -71,7 +71,7 @@ function Symbol() {
 
     const res = await renewalModal.show({ seedDetailInfo, mainAddress });
     if (res) {
-      paySucModal.show();
+      message.success('Renewal successful');
     }
   };
 

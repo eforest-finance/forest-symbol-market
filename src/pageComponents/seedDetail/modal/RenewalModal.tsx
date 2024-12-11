@@ -23,6 +23,7 @@ import symbol from 'pageComponents/profile/components/symbol';
 import { useGetSymbolService } from '../hooks/useGetSymbol';
 import { getSymbolInfo } from 'api/seedDetail';
 import { getSeedRenew } from 'api/request';
+import moment from 'moment';
 
 interface IPayModalProps {
   seedDetailInfo?: ISeedDetailInfo;
@@ -163,6 +164,8 @@ export const RenewalModal = NiceModal.create(({ seedDetailInfo: detailInfo, main
       </Button>
     </div>
   );
+
+  const date = moment(Number(seedDetailInfo?.expireTime) * 1000).utc();
   return (
     <BaseModal
       width={680}
@@ -175,11 +178,22 @@ export const RenewalModal = NiceModal.create(({ seedDetailInfo: detailInfo, main
       footer={footer}
       maskClosable
       title="Confirm Renewal">
-      <div className="flex flex-row my-[32px] items-center font-medium">
-        {seedDetailInfo && <SeedImage className="shrink-0" seedInfo={seedDetailInfo} />}
-        <div className="ml-[16px] text-[14px]">
-          <span className="text-primary-color">SEED-</span>
-          <span className="text-white break-all">{seedDetailInfo?.symbol || ''}</span>
+      <div className="flex items-center justify-between">
+        <div className="flex flex-row my-[32px] items-center font-medium">
+          {seedDetailInfo && <SeedImage className="shrink-0" seedInfo={seedDetailInfo} />}
+          <div className="ml-[16px] text-[14px]">
+            <span className="text-primary-color">SEED-</span>
+            <span className="text-white break-all">{seedDetailInfo?.symbol || ''}</span>
+          </div>
+        </div>
+        <div>
+          <div className={styles['seed-info-right']}>
+            <div className="text-sm text-[#796F94]">Expiration date after renewal</div>
+            <div>
+              <span className="text-base font-bold mt-2 mr-1">{date.format('ll')}</span>
+              <span className="text-base font-bold mt-1">{date.format('HH:mm:ss [UTC]')}</span>
+            </div>
+          </div>
         </div>
       </div>
       <div className="flex rounded-md justify-between items-center p-4 bg-[#100D1B] border border-solid border-[#231F30] text-[16px] font-medium text-white">
