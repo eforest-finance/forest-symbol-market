@@ -70,7 +70,7 @@ function getSeedTitle(seedDetailInfo: ISeedDetailInfo) {
 // }
 
 function renderExpireWarningInfo(seedDetailInfo: ISeedDetailInfo) {
-  const { expireTime, auctionEndTime } = seedDetailInfo || {};
+  const { expireTime, auctionEndTime, canBeBid } = seedDetailInfo || {};
   if (!expireTime) {
     return (
       <span className={styles['seed-info-right']}>
@@ -78,8 +78,14 @@ function renderExpireWarningInfo(seedDetailInfo: ISeedDetailInfo) {
       </span>
     );
   }
-  if (auctionEndTime * 1000 - Date.now() > 0) {
-    return;
+
+  if (canBeBid) {
+    if (auctionEndTime * 1000 - Date.now() > 0) {
+      return;
+    }
+    if (auctionEndTime == 0) {
+      return;
+    }
   }
   const date = moment(expireTime * 1000).utc();
   return (
