@@ -70,13 +70,16 @@ function getSeedTitle(seedDetailInfo: ISeedDetailInfo) {
 // }
 
 function renderExpireWarningInfo(seedDetailInfo: ISeedDetailInfo) {
-  const { seedType, status, expireTime } = seedDetailInfo || {};
+  const { expireTime, auctionEndTime } = seedDetailInfo || {};
   if (!expireTime) {
     return (
       <span className={styles['seed-info-right']}>
         <span className="text-white text-sm">The SEED is due to expire in one year upon creation.</span>
       </span>
     );
+  }
+  if (auctionEndTime * 1000 - Date.now() > 0) {
+    return;
   }
   const date = moment(expireTime * 1000).utc();
   return (
@@ -124,7 +127,7 @@ function renderCreatingTip(seedDetailInfo: ISeedDetailInfo) {
 }
 
 function SeedInfo({ seedDetailInfo }: ISeedInfoProps) {
-  const { seedType, status, auctionEndTime, topBidPrice } = seedDetailInfo || {};
+  const { seedType, status, auctionEndTime } = seedDetailInfo || {};
 
   if (status === NOT_SUPPORT_SEED_STATUS.NOT_SUPPORT || status === SEED_STATUS.REGISTERED) {
     return null;
