@@ -267,7 +267,7 @@ const SearchInput = ({
           if (checkInput(query)) {
             setTimeout(() => {
               setExpanded(true);
-            }, 200);
+            }, 300);
           }
           setTimeout(() => {
             window.scrollTo(0, e.target.offsetTop);
