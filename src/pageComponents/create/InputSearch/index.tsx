@@ -64,7 +64,7 @@ function OptionItemDrawer({ onSelectHandler, value, options, loading = false, ta
   return ReactDOM.createPortal(
     <div
       style={positionStyleObject}
-      className="fixed z-[1000] bg-[#0E0c15] mt-1 border border-solid border-primary-color rounded-lg overflow-y-auto">
+      className="fixed z-[2000] bg-[#0E0c15] mt-1 border border-solid border-primary-color rounded-lg overflow-y-auto">
       <Spin spinning={loading}>
         {options.map((option: any) => {
           return (
@@ -263,10 +263,15 @@ const SearchInput = ({
         placeholder={'Please enter letters (A-Z)'}
         onChange={onChangeHandler}
         onPressEnter={onClickHandler}
-        onFocus={() => {
+        onFocus={(e) => {
           if (checkInput(query)) {
-            setExpanded(true);
+            setTimeout(() => {
+              setExpanded(true);
+            }, 500);
           }
+          setTimeout(() => {
+            window.scrollTo(0, e.target.offsetTop);
+          }, 100);
         }}
         onBlur={() => {
           setTimeout(() => {
